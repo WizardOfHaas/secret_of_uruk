@@ -127,3 +127,22 @@ gui_print_to_hud:
 
 	popa
 	ret
+
+;Show stats block in HUD
+gui_stats_to_hud:
+	pusha
+
+	mov bl, 21
+	mov bh, 1
+	call set_cursor_pos
+
+	mov si, .hp_msg
+	call sprint
+	
+	mov ax, [_player_hp]
+	call iprint
+
+	popa
+	ret
+
+	.hp_msg db 'HP: ', 0

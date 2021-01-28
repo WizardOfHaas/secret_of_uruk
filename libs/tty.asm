@@ -112,6 +112,7 @@ get_cursor_pos:
 get_char_at:
 	push dx
 	push di
+	push bx
 
 	movzx ax, bh			;Get y cursor position
 	mov dx, 160				;2 bytes (char/attrib)
@@ -125,6 +126,7 @@ get_char_at:
 
 	mov ax, [di]
 
+	pop bx
 	pop di
 	pop dx
 	ret

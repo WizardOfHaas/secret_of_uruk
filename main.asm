@@ -51,6 +51,8 @@ start:
 	mov si, hud_msg
 	call gui_print_to_hud
 
+	call items_load
+
 	call player_display
 
 	call init_keybd
@@ -80,6 +82,7 @@ hud_msg:		db 'Welcome to the...    ', 'D A N G E R Z O N E!', 10, 0
 %include "./libs/keybd.asm"
 %include "./libs/gui.asm"
 %include "./libs/player.asm"
+%include "./libs/items/items.asm"
 
 %include "./img/frame.img"
 %include "./img/map.asm"
