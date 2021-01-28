@@ -78,3 +78,52 @@ gui_frame:
 
 	popa
 	ret
+
+;Throw up a map!
+;	SI - map struct to display
+;		...must be a null-terminated string, 78x16 font tile map
+gui_render_map:
+	push cx
+	push bx
+
+	mov bl, 0
+	mov bh, 6
+	mov cl, 78
+	mov ch, 16
+	call gui_frame
+
+	mov cl, 78
+    mov bl, 1
+    mov bh, 7
+    call block_print
+
+	pop bx
+	pop cx
+	ret
+
+;Throw stuff in the heads up display
+gui_render_hud:
+	pusha
+	
+	mov bl, 0
+	mov bh, 0
+	mov cl, 78
+	mov ch, 4
+	call gui_frame
+
+	popa
+	ret
+
+;Print in HUD message area
+;	SI - message
+;		...it will be wrapped...
+gui_print_to_hud:
+	pusha
+
+	mov cl, 20
+	mov bl, 1
+	mov bh, 1
+	call block_print
+
+	popa
+	ret

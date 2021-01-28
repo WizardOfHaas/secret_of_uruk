@@ -111,7 +111,6 @@ get_cursor_pos:
 ;	AH - Attributes
 get_char_at:
 	push dx
-	push bx
 	push di
 
 	movzx ax, bh			;Get y cursor position
@@ -127,7 +126,6 @@ get_char_at:
 	mov ax, [di]
 
 	pop di
-	pop bx
 	pop dx
 	ret
 

@@ -45,81 +45,19 @@ start:
 	;call img_framed
 
 	mov si, test_map
-	mov cl, 78
-	mov bl, 1
-	mov bh, 8
-	call block_print
+	call gui_render_map
 
-	mov bx, word [player_pos]
-	call set_cursor_pos
+	call gui_render_hud
+	mov si, hud_msg
+	call gui_print_to_hud
 
-	mov al, '@'
-	call cprint
+	call player_display
 
 	call init_keybd
 end:
-	call keybd_read_char	;;Fetch the latest key press off our buffer
-	cmp al, 0				;;Bail if we didn't get anything
-	je end
-
-	;;Lets try moving around the screen...
-	mov bx, word [player_pos];;Get current player position
-
-	cmp al, 'w'
-	je .up
-
-	cmp al, 'a'
-	je .left
-
-	cmp al, 's'
-	je .down
-
-	cmp al, 'd'
-	je .right
-	jmp end
-
-.up:
-	dec bh
-	jmp .check
-.down:
-	inc bh
-	jmp .check
-.left:
-	dec bl
-	jmp .check
-.right:
-	inc bl
-
-.check:
-	;;Is thi s new position valid?
-	cmp bh, 25
-	jge end
-
-	cmp bl, 80
-	jge end
-
-	call get_char_at		;;Is this space free? Will envetually be a map thing...
-	cmp al, 46
-	jne end
-
-.disp:
-	push bx
-	mov bx, word [player_pos]
-	call set_cursor_pos
-	mov al, 46
-	call cprint
-	pop bx
-
-	mov word [player_pos], bx
-	call set_cursor_pos
-	mov al, '@'		;;Print our player...
-	call cprint
+	call player_keybd_handle
 
 	jmp end
-
-player_pos:
-player_x: db 40
-player_y: db 10
 
 boot_msg: 		
     db "     ______               ____  _____", 10
@@ -132,6 +70,7 @@ boot_msg:
 panic_msg:		db 'Kernel Panic!', 0
 mm_msg:			db 'Init memory manager...   ', 0
 kb_msg:			db 'kb detected', 10, 0
+hud_msg:		db 'Welcome to the...    ', 'D A N G E R Z O N E!', 10, 0
 
 %include "./libs/mem.asm"
 %include "./libs/string.asm"
@@ -140,6 +79,7 @@ kb_msg:			db 'kb detected', 10, 0
 %include "./libs/img.asm"
 %include "./libs/keybd.asm"
 %include "./libs/gui.asm"
+%include "./libs/player.asm"
 
 %include "./img/frame.img"
 %include "./img/map.asm"
