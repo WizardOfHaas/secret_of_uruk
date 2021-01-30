@@ -91,6 +91,8 @@ player_keybd_handle:
 	mov di, si
 	add si, 29
 	call gui_print_to_hud
+
+	call word [di + 25]
 .done:
 	ret
 

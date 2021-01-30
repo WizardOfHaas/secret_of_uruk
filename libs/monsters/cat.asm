@@ -34,11 +34,15 @@ dw _monster_cat_mover
 
 db 'THE CHONK', 0
 
+_monster_cat_img:
 %include "./img/cat.img"
 
-
+;Monster Combat handler, ran each turn of combat
 _monster_cat_handler:
+	mov si, _monster_cat_img
+	call img_framed
 	ret
 
+;Monster moving sub, ran each turn on map screen
 _monster_cat_mover:
 	ret
