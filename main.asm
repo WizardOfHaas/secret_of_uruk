@@ -44,19 +44,32 @@ start:
 	;mov si, test_img
 	;call img_framed
 
+	;;Load up the starting map...
 	mov si, test_map
 	call gui_render_map
 
+	;;Load the hud, print intro message, show stats
 	call gui_render_hud
 	mov si, hud_msg
 	call gui_print_to_hud
+	call gui_stats_to_hud
 
+	;;Load item data and font tiles
 	call items_load
 
+	;;Render our little dude
 	call player_display
 
+	;;Lets try loading in a monster!
+	call monsters_load
+	mov bl, 40
+	mov bh, 15
+	call monster_add_to_map
+	call monsters_render_to_map
+
+	;;Load keyboard ISR and start up buffer
 	call init_keybd
-end:
+end: ;;Enter the input loop...
 	call player_keybd_handle
 
 	jmp end
@@ -82,7 +95,10 @@ hud_msg:		db 'Welcome to the...    ', 'D A N G E R Z O N E!', 10, 0
 %include "./libs/keybd.asm"
 %include "./libs/gui.asm"
 %include "./libs/player.asm"
+%include "./libs/monsters/monster.asm"
+
 %include "./libs/items/items.asm"
+%include "./libs/menus/menu.asm"
 
 %include "./img/frame.img"
 %include "./img/map.asm"
@@ -140,12 +156,5 @@ kernel_panic:
 
 	cli
 	hlt
-
-db 'img_start'
-
-test_img:
-%include "./test.img"
-
-db 'img_end'
 
 start_free_mem:

@@ -1,5 +1,7 @@
 	db 'gui.asm'
 
+current_map: dw 0
+
 ;Print a message inside a fancy frame
 ;	SI - Message to alert
 gui_alert:
@@ -86,6 +88,8 @@ gui_render_map:
 	push cx
 	push bx
 
+	mov word [current_map], si	;;Save current map struct
+
 	mov bl, 0
 	mov bh, 6
 	mov cl, 78
@@ -117,12 +121,15 @@ gui_render_hud:
 ;Print in HUD message area
 ;	SI - message
 ;		...it will be wrapped...
+;	Should change to scroll later...
 gui_print_to_hud:
 	pusha
 
 	mov cl, 20
 	mov bl, 1
 	mov bh, 1
+	mov dx, 80
+	call block_clear
 	call block_print
 
 	popa
@@ -132,17 +139,40 @@ gui_print_to_hud:
 gui_stats_to_hud:
 	pusha
 
-	mov bl, 21
+	mov bl, 25
 	mov bh, 1
 	call set_cursor_pos
 
+	mov si, .lv_msg
+	call sprint	
+	mov ax, [_player_lv]
+	call iprint
+
+	inc bh
+	call set_cursor_pos
 	mov si, .hp_msg
 	call sprint
-	
 	mov ax, [_player_hp]
+	call iprint
+
+	inc bh
+	call set_cursor_pos
+	mov si, .ac_msg
+	call sprint
+	mov ax, [_player_ac]
+	call iprint
+
+	inc bh
+	call set_cursor_pos
+	mov si, .pw_msg
+	call sprint
+	mov ax, [_player_pw]
 	call iprint
 
 	popa
 	ret
 
-	.hp_msg db 'HP: ', 0
+	.lv_msg db 'LEVEL: ', 0
+	.hp_msg db 'HEALTH:', 0
+	.ac_msg db 'ARMOR: ', 0
+	.pw_msg db 'POWER: ', 0

@@ -5,7 +5,10 @@ player_pos:
 	_player_y: db 10
 
 player_stats:
-	_player_hp: dw 1
+	_player_lv:	dw 1	;;Level
+	_player_hp: dw 1	;;Health
+	_player_ac: dw 0	;;Armor Class
+	_player_pw:	dw 0	;;Power
 
 ;Deal with keyboard inputs on map screen
 player_keybd_handle:
@@ -49,10 +52,6 @@ player_keybd_handle:
     cmp bl, 80
     jge .done
 
-    ;call get_char_at        ;;Is this space free? Will envetually be a map thing...
-    ;cmp al, 46
-    ;jne .done
-
 	call player_check_move
 	jc .done
 
@@ -70,6 +69,16 @@ player_keybd_handle:
 	cmp si, 0
 	je .done
 
+	cmp ah, 'I'
+	je .item_hit
+
+	cmp ah, 'M'
+	je .monster_hit
+
+	jmp .done
+
+	;;Need to do logic to deal with monster/item differently
+.item_hit:
 	mov di, si	
 	add si, 19
 	call gui_print_to_hud
@@ -77,6 +86,11 @@ player_keybd_handle:
 	call word [di + 17]
 
 	call gui_stats_to_hud
+	jmp .done
+.monster_hit:
+	mov di, si
+	add si, 29
+	call gui_print_to_hud
 .done:
 	ret
 
@@ -91,7 +105,15 @@ player_check_move:
 	cmp al, 46
 	je .ok
 
+	mov ah,'I' ;;Mark as item
+
 	call item_lookup
+	cmp si, 0
+	jne .ok
+
+	mov ah, 'M'	;;Mark as monster
+
+	call monster_lookup
 	cmp si, 0
 	jne .ok
 

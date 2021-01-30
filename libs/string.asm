@@ -139,6 +139,12 @@ atoi:
 	.multiplier	dw 0
 	.tmp		dw 0
 
+;Convert single char to int
+;	AL - char to convert, this is dumb code...
+ctoi:
+	sub al, 48
+	ret
+
 ;Get length of string
 ;	SI - string
 ;	AX - length of string

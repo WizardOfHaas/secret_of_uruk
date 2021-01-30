@@ -50,6 +50,39 @@ block_print:
 
 	.width db 0
 
+;	DX - length to zero out
+block_clear:
+	pusha
+	
+	mov byte [.width], cl		;;Save over image width
+
+	mov ax, bx					;;Save current cursor pos
+	mov bx, ax					;;Set to initial position
+	call set_cursor_pos
+.loop:
+	mov al, 0
+	call cprint					;;Print the character
+
+	dec dx
+	cmp dx, 0
+	je .done
+
+	dec cl						;;Dec and check the current column
+	cmp cl, 0
+	jg .loop					;;As long as we have space keep looping
+
+	;;Deal with the wrap
+	mov cl, byte [.width]
+	inc bh
+	call set_cursor_pos
+	jmp .loop
+	
+.done:
+	popa
+	ret
+
+	.width db 0
+
 ;Same as block print, but no null termination
 ;	See above...
 ;	DX - Length of block to print

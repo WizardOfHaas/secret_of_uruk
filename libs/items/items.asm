@@ -17,9 +17,6 @@ items_load:
 	add di, ax
 	mov word [di], _item_hp
 
-	;mov si, _item_hp
-	;call print_regs
-
 	ret
 
 ;	SI - tile to load
