@@ -63,6 +63,8 @@ img_set_font:
 ;	...god help me
 ;	SI - Image struct to blit out
 ;		Should be formed as...
+;	BL - x pos
+;	BH - y pos
 ;
 ;	db NUMBER OF FONT TILES
 ;	...set of 8x16 bit font tiles...
@@ -70,7 +72,8 @@ img_set_font:
 ;	...map of tiles ot display...
 img_display:
 	pusha
-	
+	push bx
+
 	;;Get size of font pack
 	xor cx, cx				;;Clear CX, this will hold the size of the font pack
 	mov cl, byte[si]		;;Grab the pack's size
@@ -94,7 +97,7 @@ img_display:
 	mov cl, byte[si]		;;Grab the width
 
 	inc si					;;Advance pointer into actual tile map
-	call get_cursor_pos
+	pop bx
 	call block_print
 
 	popa

@@ -2,6 +2,8 @@
 
 current_menu: dw 0
 
+%include "./libs/menus/combat_menu.asm"
+
 menu_clear:
 	mov bl, 60
 	mov bh, 1
@@ -22,12 +24,12 @@ menu_start:
 
 ;Throw up a menu
 ;	SI - menu to render
+;	BL - x pos
+;	BH - y pos
 menu_render:
 	push si
 	mov word [current_menu], si
 
-	mov bl, 60
-	mov bh, 1
 	call set_cursor_pos
 
 	;;Get length of menu
@@ -37,16 +39,6 @@ menu_render:
 	mov di, si
 	movzx cx, byte [di]
 	inc di
-
-	;push cx
-	;mov ch, cl
-	;add cl, 2
-	;mov cl, 15
-	;call gui_frame
-	;pop cx
-	;inc bl
-	;inc bh
-	;call set_cursor_pos
 
 	mov ax, 1
 .loop:
@@ -63,6 +55,8 @@ menu_render:
 
 	inc bh
 	call set_cursor_pos
+
+	add di, 2
 	
 	inc ax
 	dec cx

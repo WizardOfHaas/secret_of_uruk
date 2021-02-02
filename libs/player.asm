@@ -62,9 +62,17 @@ player_keybd_handle:
     mov al, 46
     call cprint
     pop bx
-
+		
 	mov word [player_pos], bx
+
+	push si
+	mov si, word [current_map]
+	call gui_update_fov
+	pop si
+
 	call player_display
+
+    call monsters_render_to_map
 
 	cmp si, 0
 	je .done
@@ -88,11 +96,14 @@ player_keybd_handle:
 	call gui_stats_to_hud
 	jmp .done
 .monster_hit:
-	mov di, si
-	add si, 29
+	push si
+	mov di, word [si]
+	add di, 29
+	mov si, di
 	call gui_print_to_hud
 
-	call word [di + 25]
+	pop si
+	call combat_start
 .done:
 	ret
 
@@ -116,7 +127,7 @@ player_check_move:
 	mov ah, 'M'	;;Mark as monster
 
 	call monster_lookup
-	cmp si, 0
+	cmp word [si], 0
 	jne .ok
 
 	stc

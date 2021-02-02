@@ -25,7 +25,7 @@ db 00100100b
 db 00000000b
 
 dw 1	;;LVL
-dw 1	;;HP
+dw 15	;;HP
 dw 0	;;AC
 dw 0	;;PW
 
@@ -39,8 +39,8 @@ _monster_cat_img:
 
 ;Monster Combat handler, ran each turn of combat
 _monster_cat_handler:
-	mov si, _monster_cat_img
-	call img_framed
+	;mov si, _monster_cat_img
+	;call img_framed
 	ret
 
 ;Monster moving sub, ran each turn on map screen

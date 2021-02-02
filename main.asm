@@ -40,6 +40,8 @@ start:
 	mov dx, 1
 	call img_set_font
 
+	call rnd_init	;;Seed up the random number generator
+
 	;;Test image, show the cat!
 	;mov si, test_img
 	;call img_framed
@@ -47,6 +49,7 @@ start:
 	;;Load up the starting map...
 	mov si, test_map
 	call gui_render_map
+	call gui_update_fov
 
 	;;Load the hud, print intro message, show stats
 	call gui_render_hud
@@ -57,15 +60,18 @@ start:
 	;;Load item data and font tiles
 	call items_load
 
-	;;Render our little dude
-	call player_display
-
 	;;Lets try loading in a monster!
 	call monsters_load
+
 	mov bl, 40
 	mov bh, 15
 	call monster_add_to_map
 	call monsters_render_to_map
+
+	mov si, word [current_map]
+	call gui_update_fov
+
+	call player_display
 
 	;;Load keyboard ISR and start up buffer
 	call init_keybd
@@ -95,6 +101,8 @@ hud_msg:		db 'Welcome to the...    ', 'D A N G E R Z O N E!', 10, 0
 %include "./libs/keybd.asm"
 %include "./libs/gui.asm"
 %include "./libs/player.asm"
+%include "./libs/combat.asm"
+%include "./libs/rnd.asm"
 %include "./libs/monsters/monster.asm"
 
 %include "./libs/items/items.asm"

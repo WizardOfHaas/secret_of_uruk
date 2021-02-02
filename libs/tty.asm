@@ -153,11 +153,17 @@ get_char_at:
 	movzx bx, bl			;Get x cursor position
 	shl bx, 1				;times 2 to skip attrib
  	
- 	mov di, tty_buffer		;start of video memory
+ 	mov di, 0		;start of video memory
 	add di, ax      		;add y offset
 	add di, bx      		;add x offset
 
-	mov ax, [di]
+	push es
+	mov ax, 0xB800
+	mov es, ax
+
+	mov ax, [es:di]
+
+	pop es
 
 	pop bx
 	pop di
@@ -304,7 +310,7 @@ rep_cprint:
 	popa
 	ret
 
-;Print a char directly to the screen(buffered)
+;Print a char directly to the screen(no longer buffered)
 ;al - character to print to screen
 bios_cprint:
 	pusha
@@ -317,6 +323,7 @@ bios_cprint:
 cprint:
 	pusha
 
+	push es
 	push ax					;Save ax
 
 	movzx ax, byte [ypos]	;Get y cursor position
@@ -325,7 +332,11 @@ cprint:
 	movzx bx, byte [xpos]	;Get x cursor position
 	shl bx, 1				;times 2 to skip attrib
  	
- 	mov di, tty_buffer		;start of video memory
+ 	;mov di, tty_buffer		;start of video memory
+	mov di, 0x00
+	mov cx, 0xB800
+	mov es, cx
+
 	add di, ax      		;add y offset
 	add di, bx      		;add x offset
 
@@ -336,7 +347,7 @@ cprint:
  	cmp al, 10
  	je .nl
 
-	mov word[di], ax		;Do the direct write to text ram
+	mov word[es:di], ax		;Do the direct write to text ram
 
 	call advence_cursor
 	jmp .done
@@ -347,6 +358,7 @@ cprint:
 .done:
 	call display_buffer
 
+	pop es
  	popa
  	ret
 
@@ -381,6 +393,8 @@ scroll_buffer:
 
 ;Push buffer into text memory
 display_buffer:
+	ret	;;Lets try direct... for speed...
+
 	pusha
 	push es
 	push fs
@@ -499,6 +513,10 @@ print_regs:
 	push cx
 	push bx
 	push ax
+
+	mov bl, 1
+	mov bh, 23
+	call set_cursor_pos
 
 	xor cx, cx
 .loop:					;Iterate over registers on stack

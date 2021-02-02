@@ -37,9 +37,11 @@ monster_add_to_map:
 	mov di, monsters_on_map
 	add di, ax
 
+	mov ax, word [si + 19]
+
 	mov byte [di], bl		;;Set position
 	mov byte [di + 1], bh
-	mov word [di + 2], 1	;;Set HP, hard coded for now...
+	mov word [di + 2], ax	;;Set HP
 	mov word [di + 4], si	;;Set struct pointer
 	
 	inc byte [monsters_count]
@@ -50,6 +52,7 @@ monster_remove_from_map:
 
 ;Render monsters out to map
 monsters_render_to_map:
+	pusha
 	mov di, monsters_on_map
 	movzx dx, byte [monsters_count]
 	mov cx, 0
@@ -83,21 +86,40 @@ monsters_render_to_map:
 	inc cx
 	jmp .loop
 .done:
+	popa
 	ret
 
-;Check table for monster at char
+;Check table for monster at char, return pointer to table entry
 monster_lookup:
 	push bx
 	push ax
 
-	mov di, monsters_table
 	mov ah, 0
 	mov bx, 2
 	mul bx
 
-	add di, ax
-	mov si, word [di]
+	mov si, monsters_table
+	add si, ax
 
 	pop ax
 	pop bx
+	ret
+
+;	SI - monster
+;	AX - how much to hurt the monster
+monster_take_damage:
+	mov di, si
+	mov si, word [di]
+
+	mov bx, word [current_monster_hp]
+
+	cmp word [current_monster_hp], ax
+	jl .dead
+
+	sub word [current_monster_hp], ax
+
+	jmp .done
+.dead:
+	mov word [current_monster_hp], 0
+.done:
 	ret
