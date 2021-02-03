@@ -2,7 +2,7 @@
 
 player_pos:
 	_player_x: db 40
-	_player_y: db 10
+	_player_y: db 19
 
 player_stats:
 	_player_lv:	dw 1	;;Level

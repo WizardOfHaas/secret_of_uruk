@@ -1,7 +1,7 @@
 	db 'gui.asm'
 
 current_map: dw 0
-field_of_view: times 1248 db 1
+field_of_view: times 1248 db 0
 
 ;Print a message inside a fancy frame
 ;	SI - Message to alert
@@ -142,201 +142,146 @@ gui_render_map:
 
 ;This is gross, all long form and dumb right now. May improve later...
 ;	SI - map struct
-%define _VIEW 5
 gui_update_fov:
 	pusha
 
-	mov bl, byte [_player_x]
-	mov bh, byte [_player_y]
+	;;Scan over left side of screen
+	xor bx, bx
+.loop_1:
+	call gui_map_check_line
+	jc .next_1
 
-	sub bl, 1
-	sub bh, 7
-
-	xor cx, cx
-
-	push bx
-
-	call print_regs
-.loop_h_minus:
-	call gui_map_get_tile
-	cmp al, '.'
-	jne .loop_h_minus_done
-
-	call gui_map_show_tile
-
-	inc cx
-	cmp cx, _VIEW
-	jge .loop_h_minus_done
-
-	dec bl
-	cmp bl, 0
-	jg .loop_h_minus
-
-.loop_h_minus_done:
-	call gui_map_show_tile
-
-	xor cx, cx
-
-	pop bx
-	push bx
-.loop_h_plus:	
-	call gui_map_get_tile
-	cmp al, '.'
-	jne .loop_h_plus_done
-
-	call gui_map_show_tile
-
-    inc cx
-    cmp cx, _VIEW
-    jge .loop_h_plus_done
-
-	inc bl
-	cmp bl, 78
-	jl .loop_h_plus
-
-.loop_h_plus_done:
-	call gui_map_show_tile
-
-	xor cx, cx
-
-	pop bx
-	push bx
-.loop_v_minus:
-	call gui_map_get_tile
-	cmp al, '.'
-	jne .loop_v_minus_done
-
-	call gui_map_show_tile
-
-    inc cx
-    cmp cx, _VIEW
-    jge .loop_v_minus_done
-
-	dec bh
-	cmp bh, 0
-	jg .loop_v_minus
-
-.loop_v_minus_done:
-	call gui_map_show_tile
-
-	xor cx, cx
-
-	pop bx
-	push bx
-.loop_v_plus:
-	call gui_map_get_tile
-	cmp al, '.'
-	jne .loop_v_plus_done
-
-	call gui_map_show_tile
-
-    inc cx
-    cmp cx, _VIEW
-    jge .loop_v_plus_done
-
+	;call gui_map_show_tile
+.next_1:
 	inc bh
 	cmp bh, 16
-	jl .loop_v_plus
+	jl .loop_1
 
-.loop_v_plus_done:
-	call gui_map_show_tile
+	;;Scan right side
+	mov bl, 78
+	mov bh, 0
+.loop_2:
+	call gui_map_check_line
+	jc .next_2
 
-	xor cx, cx
-
-	pop bx
-	push bx
-.loop_hm_vm:
-	call gui_map_get_tile
-	cmp al, '.'
-	jne .loop_hm_vm_done
-
-	call gui_map_show_tile
-
-    inc cx
-    cmp cx, _VIEW
-    jge .loop_hm_vm_done
-
-	dec bl
-	dec bh
-	cmp bh, 0
-	jg .loop_hm_vm
-
-.loop_hm_vm_done:
-	call gui_map_show_tile
-
-	xor cx, cx
-
-	pop bx
-	push bx
-.loop_vm_hp:
-	call gui_map_get_tile
-	cmp al, '.'
-	jne .loop_vm_hp_done
-
-	call gui_map_show_tile
-
-    inc cx
-    cmp cx, _VIEW
-    jge .loop_vm_hp_done
-
-	inc bl
-	dec bh
-	cmp bh, 0
-	jg .loop_vm_hp
-
-.loop_vm_hp_done:
-	call gui_map_show_tile
-
-	xor cx, cx
-
-	pop bx
-	push bx
-.loop_hp_vp:
-	call gui_map_get_tile
-	cmp al, '.'
-	jne .loop_hp_vp_done
-
-	call gui_map_show_tile
-
-    inc cx
-    cmp cx, _VIEW
-    jge .loop_hp_vp_done
-
-	inc bl
+	;call gui_map_show_tile
+.next_2:
 	inc bh
 	cmp bh, 16
-	jl .loop_hp_vp
+	jl .loop_2
 
-.loop_hp_vp_done:
-	call gui_map_show_tile
+	;;Do some tricks, worst case we need to scan 14 chars to either side of player
+	;;	calculate if player is close enough to the edge
+	;;	load up bl with proper start value, set end value
+	;;	loop over and check each sight line
 
-	xor cx, cx
+	xor bx, bx
+	xor dx, dx
 
-	pop bx
-	push bx
-.loop_vp_hm:
-	call gui_map_get_tile
-	cmp al, '.'
-	jne .loop_vp_hm_done
+	mov cx, word [player_pos]
+	cmp cl, 14
+	jl .loop_3	;;We are going to start at 0
 
-	call gui_map_show_tile
+	mov bl, cl	;;Otherwise, we only need 14 lines
+	sub bl, 14
+	mov dx, bx	;;Save bx
 
-    inc cx
-    cmp cx, _VIEW
-    jge .loop_vp_hm_done
+	cmp cl, 64	;;Do we need to go to the total edge of the screen?
+	jg .loop_3
 
-	dec bl
-	inc bh
-	cmp bh, 16
-	jl .loop_vp_hm
+	add cl, 14
+	
+.loop_3:
+	call gui_map_check_line
+	jc .next_3
 
-.loop_vp_hm_done:
-	call gui_map_show_tile
+.next_3:
+	inc bl
+	cmp bl, cl
+	jl .loop_3
 
-	pop bx
+	mov bx, dx
+	mov bh, 16
+.loop_4:
+	call gui_map_check_line
+	jc .next_4
+
+.next_4:
+	inc bl
+	cmp bl, cl
+	jl .loop_4
 
 	popa
 	ret
+
+;	SI - map struct
+;	BX - tile x/y
+gui_map_check_line:
+	pusha
+	mov word [.x], bx
+
+	mov cx, word [player_pos]
+
+	sub cl, 1
+	sub ch, 7
+	mov word [.px], cx
+
+	mov bx, cx
+.loop:
+	cmp bl, byte [.x]
+	jg .sub_x
+	.sub_x_done:
+
+	cmp bh, byte [.y]
+	jg .sub_y
+	.sub_y_done:
+
+	cmp bl, byte [.x]
+	jl .add_x
+	.add_x_done:
+
+	cmp bh, byte [.y]
+	jl .add_y
+	.add_y_done:
+
+	call gui_map_get_tile
+	cmp al, '.'
+	jne .blocked
+
+	call gui_map_show_tile
+
+	cmp bx, word [.x]
+	jne .loop
+	jmp .ok
+
+.sub_x:
+	sub bl, 1
+	jmp .sub_x_done
+.sub_y:
+	sub bh, 1
+	jmp .sub_y_done
+.add_x:
+	add bl, 1
+	jmp .add_x_done
+.add_y:
+	add bh, 1
+	jmp .add_y_done
+
+.blocked:
+	call gui_map_show_tile
+	stc
+	jmp .done
+.ok:
+	clc
+.done:
+	popa
+	ret
+
+    .x db 0
+    .y db 0
+
+    .px db 0
+    .py db 0
 
 ;	SI - map struct
 ;	BL - X pos
