@@ -38,10 +38,30 @@ _monster_cat_img:
 %include "./img/cat.img"
 
 ;Monster Combat handler, ran each turn of combat
+;	AL - event type to handle...
+;		M: move
+;		D: damaged
+;		C: combat turn
 _monster_cat_handler:
-	;mov si, _monster_cat_img
-	;call img_framed
+	cmp al, 'C'
+	je .combat
+
+	cmp al, 'D'
+	je .damaged
+
+	jmp .done
+
+.combat:
+	mov si, .combat_msg
+	call gui_print_combat_msg
+	mov si, _monster_cat
+	call monster_attack_phys
+	jmp .done
+.damaged:
+.done:
 	ret
+
+	.combat_msg db 'IT SWIPES WITH CLAWS', 0
 
 ;Monster moving sub, ran each turn on map screen
 _monster_cat_mover:

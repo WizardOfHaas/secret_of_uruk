@@ -277,6 +277,8 @@ malloc:
 
 	;Test if we have enough RAM, die otherwise
 	mov cx, word [es:si + ll_node.size]
+	call print_regs
+
 	cmp ax, cx
 	jl kernel_panic							;We outta RAM! PANIC!
 

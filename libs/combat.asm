@@ -15,14 +15,50 @@ combat_start:
 	mov si, word [current_monster]
 	call gui_render_monster_health
 .test_loop:
+	cmp word [current_monster_hp], 0
+	je .player_wins
+
+	cmp word [_player_hp], 0
+	je .player_dies
+
     ;;Show the combat menu
     mov bl, 60
     mov bh, 7
     mov si, menu_combat_main
     call menu_start
-	jmp .test_loop
 
+	mov al, 'C'
+	call word [si + 25]
+
+	jmp .test_loop
+.player_wins:
+	;;Will need to...
+	;;	let monster know it died
+	;;	load back in main tileset for map
+	;;	remove monster
+	;;	handle cleanup
+	;;	handle loot
+
+	push es
+	mov ax, 0 ;word [_default_font]
+	mov es, ax
+	mov bp, 0x0500 ;word [_default_font + 2]
+	mov di, bp
+
+	xor dx, dx
+	mov cx, 512
+	;call img_set_font
+	pop es
+
+	call gui_render_map_screen
+	jmp .done
+.player_dies:
+	mov si, .msg
+	call gui_print_combat_msg
+.done:
 	ret
+
+	.msg db 'lol, ded', 0
 
 combat_roll_dice:
 	call rnd	;;Get a big random number

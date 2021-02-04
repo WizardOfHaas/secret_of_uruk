@@ -44,6 +44,30 @@ img_to_font:
 	popa
 	ret
 
+;	ES:DI - where to store font
+img_save_font:
+	pusha
+	
+    mov  bh, 06h                  ; get font table information
+    mov  ax, 1130h                ;
+    int  10h                     ;
+
+    mov  si, bp                   ; make ds:si = offset font table
+    mov  cx, 512                  ; 512 chars
+.loop:
+    movsw                       
+    movsw
+    movsw
+    movsw                  ; *** on VGA's we need 16 bytes per char
+    movsw                  ; ***  if we are on an EGA, delete one of
+    movsw                  ; ***  the movsw's
+	movsw
+	movsw
+    loop .loop                  ; loop
+
+	popa
+	ret
+
 ;Load up custom image font
 ;	BP - "font" to load
 ;	CX - Number of tiles to load

@@ -3,6 +3,12 @@
 current_map: dw 0
 field_of_view: times 1248 db 0
 
+gui_render_map_screen:
+	mov si, word [current_map]
+	call gui_render_map
+	call player_display
+	ret
+
 ;Print a message inside a fancy frame
 ;	SI - Message to alert
 gui_alert:
@@ -248,6 +254,8 @@ gui_map_check_line:
 	cmp al, '.'
 	jne .blocked
 
+	;;Should add check for previosuly uncovered tiles... improve speed...
+
 	call gui_map_show_tile
 
 	cmp bx, word [.x]
@@ -318,21 +326,25 @@ gui_map_show_tile:
 	mov dl, bl
 	add ax, dx
 
-	mov di, field_of_view
-	add di, ax
-	mov byte [di], 1
-
 	pop bx
 	add bl, 1
 	add bh, 7
 	call set_cursor_pos
 
+	cmp byte [di], 1
+	je .done
+
+	mov di, field_of_view
+	add di, ax
+	
+	mov byte [di], 1
+
 	add si, ax
 	mov al, byte [si]
 	call cprint
 
-	mov byte [char_attr], 7	
 .done:
+	mov byte [char_attr], 7	
 	popa
 	ret
 

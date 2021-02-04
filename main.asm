@@ -4,6 +4,8 @@
 
 	db 'main.asm'
 
+	_default_font: dw 0x0000, 0x0500
+
 start:
 	cli
 	xor ax, ax		;make it zero
@@ -35,16 +37,20 @@ start:
 	mov si, kb_msg
 	call sprint
 
+	;;Save over default font set
+	push es
+	mov ax, 0; word [_default_font]
+	mov es, ax
+	mov di, 0x0500 ;word [_default_font + 2]
+	call img_save_font
+	pop es
+
 	mov bp, alert_frame
 	mov cx, 7
 	mov dx, 1
 	call img_set_font
 
 	call rnd_init	;;Seed up the random number generator
-
-	;;Test image, show the cat!
-	;mov si, test_img
-	;call img_framed
 
 	;;Load up the starting map...
 	mov si, test_map

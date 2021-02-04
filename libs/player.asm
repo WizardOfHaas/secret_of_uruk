@@ -145,3 +145,16 @@ player_display:
 	call cprint
 	pop bx
 	ret
+
+;	AX - how much it hurts
+player_take_damage:
+	cmp word [_player_hp], ax
+	jl .dead
+
+	sub word [_player_hp], ax
+
+	jmp .done
+.dead:
+	mov word [_player_hp], 0
+.done:
+	ret

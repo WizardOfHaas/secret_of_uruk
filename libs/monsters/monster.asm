@@ -123,3 +123,13 @@ monster_take_damage:
 	mov word [current_monster_hp], 0
 .done:
 	ret
+
+monster_attack_phys:
+	call combat_roll_dice
+	
+	call itoa
+	call gui_print_combat_msg
+
+	call player_take_damage
+
+	ret
