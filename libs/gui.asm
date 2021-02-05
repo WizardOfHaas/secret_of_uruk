@@ -4,6 +4,13 @@ current_map: dw 0
 field_of_view: times 1248 db 0
 
 gui_render_map_screen:
+	mov bl, 0
+	mov bh, 6
+	mov cl, 80
+	mov dx, 78*19
+	call block_clear
+
+
 	mov si, word [current_map]
 	call gui_render_map
 	call player_display
@@ -98,12 +105,12 @@ gui_render_map:
 
 	mov word [current_map], si	;;Save current map struct
 
-	mov bl, 0
-	mov bh, 6
-	mov cl, 78
-	mov ch, 16
+	;mov bl, 0
+	;mov bh, 6
+	;mov cl, 78
+	;mov ch, 16
 	;call gui_frame
-
+	
 	mov cl, 78
     mov bl, 1
     mov bh, 7
@@ -313,7 +320,7 @@ gui_map_show_tile:
 
 	push bx
 
-	mov byte [char_attr], 2
+	;mov byte [char_attr], 2
 
 	xor cx, cx
 	xor dx, dx
@@ -344,7 +351,7 @@ gui_map_show_tile:
 	call cprint
 
 .done:
-	mov byte [char_attr], 7	
+	;mov byte [char_attr], 7	
 	popa
 	ret
 
@@ -372,6 +379,35 @@ gui_map_get_tile:
 
     add si, ax
     mov al, byte [si]	
+
+	pop dx
+	pop cx
+	pop bx
+	pop si
+	ret
+
+gui_map_set_tile:
+	push si
+	push bx
+	push cx
+	push dx
+	push ax
+
+    xor cx, cx
+    xor dx, dx
+
+    mov cl, bh
+
+    mov ax, 78
+    mul cx
+
+    mov dl, bl
+    add ax, dx
+
+    add si, ax
+
+	pop ax
+    mov byte [si], al
 
 	pop dx
 	pop cx
@@ -415,6 +451,10 @@ gui_stats_to_hud:
 
 	mov bl, 25
 	mov bh, 1
+	mov cl, 16
+	mov dx, 16*4
+	call block_clear
+
 	call set_cursor_pos
 
 	mov si, .lv_msg
@@ -450,6 +490,19 @@ gui_stats_to_hud:
 	.hp_msg db 'HEALTH:', 0
 	.ac_msg db 'ARMOR: ', 0
 	.pw_msg db 'POWER: ', 0
+
+;Show glyphs
+gui_glyphs_to_hud:
+	pusha
+
+	mov bl, 42
+	mov bh, 1
+	mov cl, 7
+	mov si, player_glyphs
+	call block_print
+
+	popa
+	ret
 
 ;Show combat screen
 ;	SI - monster table entry

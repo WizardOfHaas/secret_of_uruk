@@ -199,4 +199,11 @@ keybd_read_char:
 	pop si
 	sti
 .done:
+	ret
+
+keybd_wait:
+.loop:
+	call keybd_read_char
+	cmp al, 0
+	je .loop
 	ret	

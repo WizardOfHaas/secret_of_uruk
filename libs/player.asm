@@ -6,9 +6,12 @@ player_pos:
 
 player_stats:
 	_player_lv:	dw 1	;;Level
-	_player_hp: dw 1	;;Health
+	_player_hp: dw 100	;;Health
 	_player_ac: dw 0	;;Armor Class
 	_player_pw:	dw 0	;;Power
+
+player_glyphs: times 26 db '-'
+	db 0
 
 ;Deal with keyboard inputs on map screen
 player_keybd_handle:
@@ -56,6 +59,7 @@ player_keybd_handle:
 	jc .done
 
 .disp:
+	push ax
     push bx
     mov bx, word [player_pos]
     call set_cursor_pos
@@ -73,6 +77,7 @@ player_keybd_handle:
 	call player_display
 
     call monsters_render_to_map
+	pop ax
 
 	cmp si, 0
 	je .done
@@ -91,6 +96,9 @@ player_keybd_handle:
 	add si, 19
 	call gui_print_to_hud
 
+	mov bx, word [player_pos]
+	sub bl, 1
+	sub bh, 7
 	call word [di + 17]
 
 	call gui_stats_to_hud
@@ -157,4 +165,22 @@ player_take_damage:
 .dead:
 	mov word [_player_hp], 0
 .done:
+	ret
+
+;We got a new glyph!
+;	AL - glyph char code
+player_add_glyph:
+	push bx
+	xor bx, bx
+	mov bl, al
+	sub bl, 97
+
+	mov si, player_glyphs
+	add si, bx
+	mov byte [si], al
+
+	call print_regs
+
+	call gui_glyphs_to_hud
+	pop bx
 	ret

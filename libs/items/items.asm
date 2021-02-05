@@ -1,12 +1,45 @@
 	db 'items.asm'
 
 %include "./libs/items/hp.asm"
+%include "./libs/items/door.asm"
+%include "./libs/items/glyphs.asm"
 
 items_table: times 256 dw 0
 
 items_load:
-	;;Load in the tile
 	mov si, _item_hp
+	call item_register
+
+	mov si, _item_door
+	call item_register
+
+	call items_load_glyphs
+	ret
+
+;Load up all glyph items
+items_load_glyphs:
+	mov si, _item_glyphs
+	mov cx, 24
+
+.loop:
+	call item_register
+	
+	add si, 19
+	call strlen
+	inc si
+	add si, ax
+
+	dec cx
+	cmp cx, 0
+	jg .loop
+
+	ret
+
+;Register item!
+;	SI - item to register
+item_register:
+	;;Load in the tile
+	push si
 	call item_load_tile
 
 	;;Add item to the table
@@ -15,8 +48,8 @@ items_load:
 	mul bx
 	mov di, items_table
 	add di, ax
-	mov word [di], _item_hp
-
+	pop si
+	mov word [di], si
 	ret
 
 ;	SI - tile to load
@@ -53,4 +86,13 @@ item_lookup:
 
 	pop ax
 	pop bx
+	ret
+
+;	BX - x/y location of item
+item_remove_from_map:
+	pusha
+	mov al, '.'
+	mov si, word [current_map]
+	call gui_map_set_tile
+	popa
 	ret

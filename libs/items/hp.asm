@@ -26,8 +26,9 @@ db 11111111b
 
 dw _item_hp_handler
 
-db 'Health Pack', 0
+db 'HEALTH PACK', 0
 
 _item_hp_handler:
 	add word [_player_hp], 10
+	call item_remove_from_map
 	ret

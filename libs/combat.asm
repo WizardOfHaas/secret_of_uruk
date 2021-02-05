@@ -3,6 +3,10 @@
 current_monster: dw 0
 current_monster_hp: dw 0
 
+;;Table for scaling POW-based damage
+combat_power_scale:
+	
+
 ;	SI - monster to fight with
 combat_start:
 	mov word [current_monster], si
@@ -27,10 +31,17 @@ combat_start:
     mov si, menu_combat_main
     call menu_start
 
+	xor cx, cx
+	mov dx, 0x1000
+	call bios_wait
+
 	mov al, 'C'
 	call word [si + 25]
 
+	call gui_stats_to_hud
+
 	jmp .test_loop
+
 .player_wins:
 	;;Will need to...
 	;;	let monster know it died
@@ -39,11 +50,15 @@ combat_start:
 	;;	handle cleanup
 	;;	handle loot
 
+	mov si, .win_msg
+	call gui_print_combat_msg
+	call keybd_wait
+
 	push es
 	mov ax, 0 ;word [_default_font]
 	mov es, ax
 	mov bp, 0x0500 ;word [_default_font + 2]
-	mov di, bp
+	mov si, bp
 
 	xor dx, dx
 	mov cx, 512
@@ -52,13 +67,16 @@ combat_start:
 
 	call gui_render_map_screen
 	jmp .done
+
 .player_dies:
 	mov si, .msg
 	call gui_print_combat_msg
+
 .done:
 	ret
 
 	.msg db 'lol, ded', 0
+	.win_msg db 'You live to fight another day!   ', 'Press a kay to continue...', 0
 
 combat_roll_dice:
 	call rnd	;;Get a big random number

@@ -72,12 +72,13 @@ start:
 	mov bl, 40
 	mov bh, 15
 	call monster_add_to_map
-	call monsters_render_to_map
 
 	mov si, word [current_map]
 	call gui_update_fov
 
 	call player_display
+
+	call monsters_render_to_map
 
 	;;Load keyboard ISR and start up buffer
 	call init_keybd
@@ -116,6 +117,15 @@ hud_msg:		db 'Welcome to the...    ', 'D A N G E R Z O N E!', 10, 0
 
 %include "./img/frame.img"
 %include "./img/map.asm"
+
+;	CX:DX - ms to wait
+bios_wait:
+	pusha
+	mov al, 0
+	mov ah, 86h
+	int 15h
+	popa
+	ret
 
 bios_print:
 	pusha

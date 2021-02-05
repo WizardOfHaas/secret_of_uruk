@@ -13,12 +13,17 @@ height = 10
 N = 8
 M = 16
 
-def to_bin(tile):
-	ret = ""
+charCode = 97
+
+def to_bin(tile, code):
+	ret = "db " + str(code) + "\n"
 
 	for l in tile:
 		d = map(lambda x: 0 if x else 1, l)
 		ret += "db " + "".join(str(x) for x in d) + "b\n"
+
+        ret += "dw _item_glyph_handler\n"
+        ret += "db 'A STRANGE GLYPH', 0\n"
 
 	return ret
 
@@ -33,8 +38,8 @@ def show(tiles):
 	plt.show()
 
 #Read in image, convert to 128x128 black and white
-#img = Image.open(sys.argv[1]).convert("1")
-img = Image.open(sys.argv[1]).resize((width * N, height * M), Image.ANTIALIAS).convert("1")
+img = Image.open(sys.argv[1]).convert("1")
+#img = Image.open(sys.argv[1]).resize((width * N, height * M), Image.ANTIALIAS).convert("1")
 
 #Switch over to array data
 data = asarray(img)
@@ -48,14 +53,15 @@ font_pack = []
 tile_map = []
 
 for tile in tiles:
-	d = to_bin(tile)
-	
+	d = to_bin(tile, charCode)
+
 	if d in font_pack:
 		i = font_pack.index(d)
 		tile_map.append(i)
 	else:
 		font_pack.append(d)
 		tile_map.append(len(font_pack) - 1)
+                charCode += 1
 
 print("db " + str(len(font_pack)))
 print("\n".join(font_pack))
