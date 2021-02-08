@@ -80,6 +80,8 @@ start:
 
 	call monsters_render_to_map
 
+	call gui_glyphs_to_hud
+
 	;;Load keyboard ISR and start up buffer
 	call init_keybd
 end: ;;Enter the input loop...
@@ -110,6 +112,7 @@ hud_msg:		db 'Welcome to the...    ', 'D A N G E R Z O N E!', 10, 0
 %include "./libs/player.asm"
 %include "./libs/combat.asm"
 %include "./libs/rnd.asm"
+%include "./libs/magic.asm"
 %include "./libs/monsters/monster.asm"
 
 %include "./libs/items/items.asm"

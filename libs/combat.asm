@@ -6,7 +6,6 @@ current_monster_hp: dw 0
 ;;Table for scaling POW-based damage
 combat_power_scale:
 	
-
 ;	SI - monster to fight with
 combat_start:
 	mov word [current_monster], si
@@ -36,8 +35,11 @@ combat_start:
 	call bios_wait
 
 	mov al, 'C'
+	mov di, word [current_monster]	;;This is a pointer to a pointer, so... **&& fun
+	mov si, word [di]
 	call word [si + 25]
 
+	call gui_render_monster_health
 	call gui_stats_to_hud
 
 	jmp .test_loop
@@ -53,6 +55,8 @@ combat_start:
 	mov si, .win_msg
 	call gui_print_combat_msg
 	call keybd_wait
+
+	call monster_remove_from_map
 
 	push es
 	mov ax, 0 ;word [_default_font]
@@ -76,7 +80,7 @@ combat_start:
 	ret
 
 	.msg db 'lol, ded', 0
-	.win_msg db 'You live to fight another day!   ', 'Press a kay to continue...', 0
+	.win_msg db 'YOU LIVE, THIS TIME   ', 'PRESS A KEY TO CONTINUE...', 0
 
 combat_roll_dice:
 	call rnd	;;Get a big random number
@@ -97,4 +101,7 @@ combat_attack:
 
 	mov si, word [current_monster]
 	call gui_render_monster_health
+	ret
+
+combat_cast_spell:
 	ret

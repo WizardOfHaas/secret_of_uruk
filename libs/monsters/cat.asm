@@ -30,39 +30,52 @@ dw 0	;;AC
 dw 0	;;PW
 
 dw _monster_cat_handler
-dw _monster_cat_mover
+dw _monster_cat_handler
 
-db 'THE CHONK', 0
+db 'the chonk', 0
 
 _monster_cat_img:
 %include "./img/cat.img"
 
 ;Monster Combat handler, ran each turn of combat
 ;	AL - event type to handle...
-;		M: move
+;		M: move (DI is monster table entry)
 ;		D: damaged
 ;		C: combat turn
 _monster_cat_handler:
+	call print_regs
+
 	cmp al, 'C'
 	je .combat
 
 	cmp al, 'D'
 	je .damaged
 
+	cmp al, 'M'
+	je .move
+
 	jmp .done
 
 .combat:
+	;;Decide on phys or magic attack
+	call rnd
+	cmp al, 0
+	jg .cast
+
 	mov si, .combat_msg
 	call gui_print_combat_msg
 	mov si, _monster_cat
 	call monster_attack_phys
 	jmp .done
+.cast:
+	mov al, 0
+	mov ah, 'M'
+	call cast_magic
+	jmp .done
 .damaged:
+.move:
+	call monster_move_chase
 .done:
 	ret
 
 	.combat_msg db 'IT SWIPES WITH CLAWS', 0
-
-;Monster moving sub, ran each turn on map screen
-_monster_cat_mover:
-	ret

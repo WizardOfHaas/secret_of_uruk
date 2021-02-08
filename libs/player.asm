@@ -88,7 +88,7 @@ player_keybd_handle:
 	cmp ah, 'M'
 	je .monster_hit
 
-	jmp .done
+	jmp .next_turn
 
 	;;Need to do logic to deal with monster/item differently
 .item_hit:
@@ -109,9 +109,10 @@ player_keybd_handle:
 	add di, 29
 	mov si, di
 	call gui_print_to_hud
-
 	pop si
+
 	call combat_start
+.next_turn:
 .done:
 	ret
 
