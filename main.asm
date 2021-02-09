@@ -1,4 +1,5 @@
 	org 0x7E00		;Same as boot sector's %ENTRY
+	;org 0x100
 
 	jmp short start	;Jump to startup
 
@@ -112,6 +113,7 @@ hud_msg:		db 'Welcome to the...    ', 'D A N G E R Z O N E!', 10, 0
 %include "./libs/player.asm"
 %include "./libs/combat.asm"
 %include "./libs/rnd.asm"
+%include "./libs/snd.asm"
 %include "./libs/magic.asm"
 %include "./libs/monsters/monster.asm"
 

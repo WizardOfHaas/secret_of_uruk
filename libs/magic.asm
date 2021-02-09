@@ -65,10 +65,14 @@ _magic_quake:
 	mov bx, 5
 	call magic_pay_cost
 	
-	call combat_roll_dice
+	call rnd
+	shr ax, 10
+	call print_regs
+
 	call player_take_damage
 	mov si, word [current_monster]
 	call monster_take_damage
+
 	ret
 
 	.msg db "THE GROUND CRACKLES", 0

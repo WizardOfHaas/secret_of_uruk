@@ -43,8 +43,6 @@ _monster_cat_img:
 ;		D: damaged
 ;		C: combat turn
 _monster_cat_handler:
-	call print_regs
-
 	cmp al, 'C'
 	je .combat
 
@@ -68,6 +66,9 @@ _monster_cat_handler:
 	call monster_attack_phys
 	jmp .done
 .cast:
+	mov si, .cast_msg
+	call gui_print_combat_msg
+
 	mov al, 0
 	mov ah, 'M'
 	call cast_magic
@@ -79,3 +80,4 @@ _monster_cat_handler:
 	ret
 
 	.combat_msg db 'IT SWIPES WITH CLAWS', 0
+	.cast_msg db 'IT SPEAKS', 0

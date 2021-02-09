@@ -27,4 +27,18 @@ snd_tone:
     AND AL, 0FCh        ; 5) Zero 0 and 1 bit, simply disabling the gate.
     OUT 61h, AL         ; 5) Write the new keyboard controller status.
     POPA                ; Epilog: Pop off all the registers pushed
-    RET 
+    RET
+
+;White noise generator
+;	BX - number samples to generate and play
+snd_noise:
+	xor dx, dx
+	xor cx, cx
+.loop:
+	call rnd
+	call snd_tone
+
+	dec bx
+	cmp bx, 0
+	jmp .loop
+	ret
