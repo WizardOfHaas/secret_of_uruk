@@ -606,3 +606,29 @@ gui_print_combat_msg:
 	ret
 
 	.pos db 27, 7
+
+gui_clear_combat_msg:
+	pusha
+	mov byte [gui_print_combat_msg.pos + 1], 7
+    mov bl, 27
+    mov bh, 6
+    mov cl, 32
+    mov dx, 576
+    call block_clear
+	popa
+	ret
+
+;Prompt user for text input
+;	SI - prompt
+;	DI - where to store input string
+gui_combat_prompt:
+	call gui_clear_combat_msg
+	call gui_print_combat_msg
+
+	inc byte [gui_print_combat_msg.pos + 1]
+	mov bl, 27
+	mov bh, 8
+	call set_cursor_pos
+
+	call keybd_get_string
+	ret

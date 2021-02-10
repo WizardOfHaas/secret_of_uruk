@@ -2,6 +2,7 @@
 
 ;;Look here when I get back to sound
 ;;	https://github.com/leonardo-ono/Assembly8086PlayPcmDigitizedSoundOnPCSpeakerTest/blob/master/pwm.asm
+;;	https://bumbershootsoft.wordpress.com/2016/12/10/beyond-beep-boop-mastering-the-pc-speaker/
 
 ; ---------------------------------------------
 ; Generate tone with frequency specified in AX.

@@ -206,4 +206,29 @@ keybd_wait:
 	call keybd_read_char
 	cmp al, 0
 	je .loop
-	ret	
+	ret
+
+;Get this call a string!
+;	DI - where to put the string
+keybd_get_string:
+	pusha
+.loop:
+	call keybd_read_char
+	cmp al, 0
+	je .loop
+
+	cmp al, 0x0A
+	je .done
+
+	call cprint
+	mov byte [di], al
+	inc di
+
+	jmp .loop
+
+.done:
+	inc di
+	mov byte [di], 0
+
+	popa
+	ret

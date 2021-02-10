@@ -148,31 +148,31 @@ ctoi:
 ;Get length of string
 ;	SI - string
 ;	AX - length of string
-strlen:
-	pusha
-
-	xor ax, ax
-.loop:
-	cmp byte [si], 0
-	je .done
-
-	inc si
-	inc ax
-	jmp .loop
-
-.done:
-	mov [.tmp], ax
-	popa
-	mov ax, [.tmp]
-	ret
-
-	.tmp: dw 0
+;strlen:
+;	pusha
+;
+;	xor ax, ax
+;.loop:
+;	cmp byte [si], 0
+;	je .done
+;
+;	inc si
+;	inc ax
+;	jmp .loop
+;
+;.done:
+;	mov [.tmp], ax
+;	popa
+;	mov ax, [.tmp]
+;	ret
+;
+;	.tmp: dw 0
 
 ;Get length of a string
 ;	SI - string
 ; Out
 ;	AX - length of string
-strcmp:
+strlen:
 	push si
 
 	xor ax, ax
@@ -188,5 +188,30 @@ strcmp:
 	pop si
 	ret
 
-strcpy:
+;Compare SI and DI
+;	Set carry on match
+strcmp:
+	pusha
+.loop:
+	mov al, byte [si]
+	mov bl, byte [di]
+
+	cmp al, bl
+	jne .bad
+
+	cmp al, 0
+	je .done
+
+	inc si
+	inc di
+	jmp .loop
+
+.bad:
+	popa
+	clc
+	ret
+
+.done:
+	popa
+	stc
 	ret

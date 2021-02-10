@@ -36,4 +36,27 @@ _option_combat_magic:
 	dw _option_combat_magic_handler
 	db 'CAST', 0
 _option_combat_magic_handler:
+	mov si, .prompt
+	mov di, .buffer
+	call gui_combat_prompt
+
+	mov si, di
+	call magic_lookup
+	jnc .fail
+
+	call cast_magic
+
+	call itoa
+	call gui_print_combat_msg
+	jmp .done
+
+.fail:
+	mov si, .error
+	call gui_print_combat_msg
+
+.done:
 	ret
+
+	.prompt db 'SPEAK THE RUNES:', 0
+	.error db 'NOTHING HAPPENS', 0
+	.buffer times 20 db 0

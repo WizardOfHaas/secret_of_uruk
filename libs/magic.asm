@@ -37,6 +37,34 @@ cast_magic:
 	call word [si + 6]
 	ret
 
+;Lookup a spell by name
+; Traverses spell table, looks for a hit
+;	SI - name to find
+;
+;	AX - spell number, can use to cast
+magic_lookup:
+	movzx cx, byte [magic_spell_count]
+	xor ax, ax
+	mov di, magic_table
+
+.loop:
+	call strcmp
+	jc .ok
+
+	add di, 8
+
+	inc ax
+	cmp ax, cx
+	jl .loop
+
+	clc
+	jmp .done
+
+.ok:
+	stc
+.done:
+	ret
+
 ;Handle payment...
 ;	BX - how much hp
 ;	AH - (M)onster/(P)layer
@@ -66,8 +94,7 @@ _magic_quake:
 	call magic_pay_cost
 	
 	call rnd
-	shr ax, 10
-	call print_regs
+	shr ax, 14
 
 	call player_take_damage
 	mov si, word [current_monster]
