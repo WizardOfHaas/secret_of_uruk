@@ -73,7 +73,7 @@ item_lookup:
 	push bx
 	push ax
 
-	mov si, 0
+	xor si, si
 	
 	mov ah, 0
 	mov bx, 2

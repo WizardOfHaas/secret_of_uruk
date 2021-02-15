@@ -220,7 +220,11 @@ keybd_get_string:
 	cmp al, 0x0A
 	je .done
 
+	push ax
+	call player_decode_glyph
 	call cprint
+	pop ax
+
 	mov byte [di], al
 	inc di
 

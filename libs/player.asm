@@ -104,8 +104,11 @@ player_keybd_handle:
 	call gui_stats_to_hud
 	jmp .done
 .monster_hit:
+    cmp word [si + 2], 0
+    je .done
+
 	push si
-	mov di, word [si]
+	mov di, word [si + 4]
 	add di, 29
 	mov si, di
 	call gui_print_to_hud
@@ -120,6 +123,8 @@ player_keybd_handle:
 ;	BX - new x/y position of player
 ;	Sets carry on collision
 ;	SI - item/entity handler, if found
+
+;;; Currently FUCKED... can walk off screen all of a sudden...
 player_check_move:
 	call get_char_at
 	xor si, si
@@ -127,7 +132,7 @@ player_check_move:
 	cmp al, 46
 	je .ok
 
-	mov ah,'I' ;;Mark as item
+	mov ah, 'I' ;;Mark as item
 
 	call item_lookup
 	cmp si, 0
@@ -136,7 +141,7 @@ player_check_move:
 	mov ah, 'M'	;;Mark as monster
 
 	call monster_lookup
-	cmp word [si], 0
+	cmp si, 0
 	jne .ok
 
 	stc
@@ -184,4 +189,52 @@ player_add_glyph:
 
 	call gui_glyphs_to_hud
 	pop bx
+	ret
+
+;Turn a string of glyphs into letters
+;	SI - the CURSED STRING, it will be PARTLY UNCURSED
+player_decode_glyph_string:
+	pusha
+	mov di, .tmp
+
+.loop:
+	mov al, byte [si]
+	cmp al, 0
+	je .done
+
+	call player_decode_glyph
+	mov byte [di], al
+
+	inc si
+	inc di
+	jmp .loop
+
+.done:
+	popa
+
+	mov si, .tmp
+	ret
+
+	.tmp times 32 db 0
+
+;Decode a single glyph
+;	AL - char code of glyph
+player_decode_glyph:
+	push si
+	push bx
+	;;Check if the player has found the glyph
+	xor bx, bx
+	mov bl, al
+	sub bl, 97				;;Shift this down so we cah use AL as a table id
+
+	mov si, player_glyphs	;;Grab the list of known glyphs
+	add si, bx				;;Do we know this one?
+
+	cmp byte [si], '-'		;;Check if this is a placeholder
+	je .done
+
+	sub al, 32				;;Shift over to UPPER CASE LETTERS, which are left unmodified
+.done:
+	pop bx
+	pop si
 	ret

@@ -70,9 +70,14 @@ start:
 	;;Lets try loading in a monster!
 	call monsters_load
 
+    mov si, _monster_cat
 	mov bl, 40
 	mov bh, 15
 	call monster_add_to_map
+
+    mov bl, 16
+    mov bh, 16
+    call monster_add_to_map
 
 	mov si, word [current_map]
 	call gui_update_fov

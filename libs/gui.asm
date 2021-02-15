@@ -506,9 +506,9 @@ gui_glyphs_to_hud:
 
 ;Show combat screen
 ;	SI - monster table entry
+
+;;;Currently FUCKED...pointers are getting garbled somewhere
 gui_render_combat:
-	push si
-	push si					;;Save the monster pointer
 	push si
 	
 	;;Start by rendering the combat screen
@@ -524,15 +524,13 @@ gui_render_combat:
 	mov ch, 16
 	call gui_frame
 
-	pop si
-
 	;;Show the monster image
 	mov bl, 3
 	mov bh, 10
 	call set_cursor_pos
 
-	mov di, si
-	mov si, word [di]
+	mov di, word [current_monster_tab]
+	mov si, word [di + 4]
 	add si, 29
 	call strlen
 	add si, ax
@@ -546,16 +544,13 @@ gui_render_combat:
 	mov dx, 576
 	call block_clear
 
-	pop si
 	call gui_render_monster_health
 	pop si
-
 	ret
 
 ;	SI - monster table entry
 gui_render_monster_health:
-	mov di, word [current_monster]
-
+    pusha
 	mov bl, 2
 	mov bh, 8
 	call set_cursor_pos
@@ -575,20 +570,27 @@ gui_render_monster_health:
 
 	add bl, 3
 	call set_cursor_pos
-	mov si, word [di]
-	mov ax, word [si + 19]
+    mov di, word [current_monster_tab]
+	mov ax, word [di + 2]
 	call iprint
-
+    popa
 	ret
 
 	.divider db ' / ', 0
 	.clear db '            ', 0
 
 gui_print_combat_msg:
+    pusha
 	mov bl, byte [.pos]
 	mov bh, byte [.pos + 1]
 	mov cl, 32
-	
+
+	cmp byte [si], 97
+	jl .print
+
+	call player_decode_glyph_string
+
+.print:
 	call block_print
 	inc byte [.pos + 1]
 	cmp byte [.pos + 1], 24
@@ -603,6 +605,7 @@ gui_print_combat_msg:
     call block_clear
 
 .done:
+    popa
 	ret
 
 	.pos db 27, 7

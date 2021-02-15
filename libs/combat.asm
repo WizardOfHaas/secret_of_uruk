@@ -1,22 +1,27 @@
 	db 'combat.asm'
 
+current_monster_tab: dw 0
 current_monster: dw 0
 current_monster_hp: dw 0
 
 ;;Table for scaling POW-based damage
 combat_power_scale:
 	
-;	SI - monster to fight with
+;	SI - monster table entry to fight with
 combat_start:
-	mov word [current_monster], si
-	call gui_render_combat
+	mov word [current_monster_tab], si
 
-	mov di, word [si]
+    mov ax, word [si + 4]
+    mov word [current_monster], ax
+
+	mov di, ax
 	mov ax, word [di + 19]
 	mov word [current_monster_hp], ax
 
-	mov si, word [current_monster]
-	call gui_render_monster_health
+    ;;This needs to be fixed
+	call gui_render_combat
+
+	;call gui_render_monster_health
 .test_loop:
 	cmp word [current_monster_hp], 0
 	je .player_wins
@@ -35,8 +40,8 @@ combat_start:
 	call bios_wait
 
 	mov al, 'C'
-	mov di, word [current_monster]	;;This is a pointer to a pointer, so... **&& fun
-	mov si, word [di]
+	mov di, word [current_monster_tab]	;;This is a pointer to a pointer, so... **&& fun
+	mov si, word [di + 4]
 	call word [si + 25]
 
 	call gui_render_monster_health
@@ -56,6 +61,7 @@ combat_start:
 	call gui_print_combat_msg
 	call keybd_wait
 
+    mov si, word [current_monster_tab]
 	call monster_remove_from_map
 
 	push es

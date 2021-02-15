@@ -23,13 +23,12 @@ monster_add_to_table:
 
 	add di, ax
 	mov word [di], si
-
 	ret
 
 ;	SI - monster struct
-;	BL - X
-;	BH - y
+;	BX - x/y position
 monster_add_to_map:
+    push si
 	movzx ax, byte [monsters_count]
 	mov cx, 6
 	mul cx
@@ -45,32 +44,35 @@ monster_add_to_map:
 	mov word [di + 4], si	;;Set struct pointer
 	
 	inc byte [monsters_count]
+    pop si
 	ret
 
 ;	SI - monster table entry
 monster_remove_from_map:
-	dec byte [monsters_count]
+	;dec byte [monsters_count]
+    mov word [si], 0
+    mov word [si + 2], 0
+    mov word [si + 4], 0
 	ret
 
 ;Render monsters out to map
 ;	Also tells each monster to make a move...
 monsters_render_to_map:
 	pusha
-	mov di, monsters_on_map
-	movzx dx, byte [monsters_count]
+	mov di, monsters_on_map ;;DI will point to the monster's entry in the map table
 	mov cx, 0
 .loop:				;;Only works for 1 right now, will need a fix...
+	movzx dx, byte [monsters_count]
 	cmp cx, dx
 	jge .done
 
-	mov ax, 6
-	mul cx
-	add di, ax
-
-	push cx
-	push dx
+    cmp word [di + 2], 0    ;;Is this monster dead?
+    je .next
 
 	mov si, word [di + 4]	;;Get pointed to struct
+
+    push cx
+	push dx
 	movzx dx, byte [si]
 	mov bp, si
 	inc bp
@@ -79,9 +81,6 @@ monsters_render_to_map:
 	call img_set_font
 
 	;;Tell the monster to update it's position
-	;mov bl, byte [di]		;;Get location of monster
-	;mov bh, byte [di + 1]
-	
 	mov bx, word [di]
 	mov al, 'M'
 	call word [si + 25]
@@ -94,9 +93,11 @@ monsters_render_to_map:
 	pop dx
 	pop cx
 
-	;cmp bx, word [player_pos]	;;Is it combat time?
-	;je .combat
-
+	cmp bx, word [player_pos]	;;Is it combat time?
+	je .combat
+    
+.next:
+    add di, 6
 	inc cx
 	jmp .loop
 .combat:
@@ -160,17 +161,42 @@ monster_move_chase:
 	ret
 
 ;Check table for monster at char, return pointer to table entry
+;   AL - monster char code
+;   BX - location on screen
 monster_lookup:
 	push bx
 	push ax
 
 	mov ah, 0
-	mov bx, 2
-	mul bx
+	mov cx, 2
+	mul cx
 
-	mov si, monsters_table
+	mov si, monsters_table  ;;Refrence the char code -> monster map
 	add si, ax
 
+    cmp si, 0               ;;Is this no monster?
+    je .done
+
+    ;;Find the map entry...
+    ;;  Basically traverse monster_on_map table until we find the right location
+    mov di, monsters_on_map
+    xor cx, cx
+    movzx ax, byte [monsters_count]
+.loop:
+    cmp word [di], bx
+    je .found
+
+    add di, 6
+    inc cx
+    cmp cx, ax
+    jle .loop
+
+    xor si, si
+    jmp .done
+
+.found:
+    mov si, di
+.done:
 	pop ax
 	pop bx
 	ret

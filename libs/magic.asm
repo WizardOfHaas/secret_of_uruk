@@ -10,7 +10,6 @@
 ;;		BX - HP Cost
 ;;		AX - HP Damage
 ;;	Any other effects are dealt with in the handler itself
-
 magic_spell_count: db 1
 magic_table:
 	db "enkku", 0
@@ -25,8 +24,6 @@ cast_magic:
 
 	mov bh, ah
 	mov ah, 0
-
-	call print_regs
 
 	mov si, magic_table
 	add si, ax
@@ -87,6 +84,8 @@ magic_pay_cost:
 
 ;;Simple spell, costs 5 HP, does 1 die to everyone
 _magic_quake:
+    call print_regs
+
 	mov si, .msg
 	call gui_print_combat_msg
 
@@ -98,6 +97,7 @@ _magic_quake:
 
 	call player_take_damage
 	mov si, word [current_monster]
+
 	call monster_take_damage
 
 	ret
