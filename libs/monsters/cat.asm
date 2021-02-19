@@ -24,7 +24,7 @@ db 10011001b
 db 00100100b
 db 00000000b
 
-dw 1	;;LVL
+dw 1	;;EXP
 dw 15	;;HP
 dw 0	;;AC
 dw 0	;;PW

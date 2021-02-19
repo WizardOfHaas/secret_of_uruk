@@ -1,11 +1,13 @@
 	db 'player.asm'
 
+player_map_cell: dw 0
+
 player_pos:
 	_player_x: db 40
 	_player_y: db 19
 
 player_stats:
-	_player_lv:	dw 1	;;Level
+	_player_xp:	dw 1	;;EXP
 	_player_hp: dw 100	;;Health
 	_player_ac: dw 0	;;Armor Class
 	_player_pw:	dw 0	;;Power
@@ -55,6 +57,23 @@ player_keybd_handle:
     cmp bl, 80
     jge .done
 
+    ;;Need to add edge detection
+    mov ah, 'E'     ;Exit East...
+    cmp bl, 78
+    jg .left_map
+
+    mov ah, 'W'
+    cmp bl, 0
+    je .left_map
+
+    mov ah, 'S'
+    cmp bh, 23
+    jge .left_map
+
+    mov ah, 'N'
+    cmp bh, 7
+    jl .left_map
+
 	call player_check_move
 	jc .done
 
@@ -91,8 +110,11 @@ player_keybd_handle:
 	jmp .next_turn
 
 	;;Need to do logic to deal with monster/item differently
+.left_map:
+    call player_move_to_map
+    jmp .done
 .item_hit:
-	mov di, si	
+	mov di, si
 	add si, 19
 	call gui_print_to_hud
 
@@ -118,6 +140,58 @@ player_keybd_handle:
 .next_turn:
 .done:
 	ret
+
+;Move to the next map...
+;   AH - Direction player is trying to go: N/S/E/W
+player_move_to_map:
+    ;Figure out where the player is attempting to move to
+    ;Is this a valid map? Are we at an edge?
+    ;Grab the map ID
+    ;Refrence the map table for map ID -> address(later will be file name)
+    ;Load up the new map
+    ;Adjust player world map and local map locations
+    call print_regs
+    mov bx, word [player_map_cell] ;;BL -> X, BH -> Y
+
+    cmp ah, 'N'
+    je .north
+
+    cmp ah, 'S'
+    je .south
+
+    cmp ah, 'E'
+    je .east
+
+    cmp ah, 'W'
+    je .west
+
+    jmp .done
+
+.north:
+    dec BH
+    jmp .check
+.south:
+    inc BH
+    jmp .check
+.east:
+    inc bl
+    jmp .check
+.west:
+    dec bl
+
+.check:
+    cmp bl, byte [world_map_size]
+    jg .done
+
+    cmp bh, byte [world_map_size]
+    jg .done
+
+    call map_fetch_from_table
+
+    call print_regs
+
+.done:
+    ret
 
 ;Check if new space is clear, item, or enemy
 ;	BX - new x/y position of player
@@ -238,3 +312,8 @@ player_decode_glyph:
 	pop bx
 	pop si
 	ret
+
+;   AX - XP to add
+player_add_xp:
+    add word [_player_xp], ax
+    ret

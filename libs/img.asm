@@ -44,6 +44,34 @@ img_to_font:
 	popa
 	ret
 
+;Load in a fancy font pack
+;   SI - pointer to struct, formatted as...
+;       db number_of_chars
+;           ...each tile...
+;       db char_code
+;           16 bytes of font bitmap
+img_load_font_pack:
+    pusha
+    movzx bx, byte [si]
+    inc si
+
+    mov cx, 1
+.loop:
+    mov bp, si
+    inc bp
+
+    movzx dx, byte [si]
+
+    call img_set_font
+
+    add si, 17
+    dec bx
+    cmp bx, 0
+    jg .loop
+
+    popa
+    ret
+
 ;	ES:DI - where to store font
 img_save_font:
 	pusha
@@ -72,7 +100,7 @@ img_save_font:
 ;	BP - "font" to load
 ;	CX - Number of tiles to load
 ;	DX - Starting char code to load
-img_set_font:
+img_set_font: ;;Something is wrong... here of all places? At least in dosbox
     pusha
 	
     mov bh, 16          ; 14 bytes per char

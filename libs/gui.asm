@@ -1,6 +1,6 @@
 	db 'gui.asm'
 
-current_map: dw 0
+;current_map: dw 0
 field_of_view: times 1248 db 0
 
 gui_render_map_screen:
@@ -457,9 +457,9 @@ gui_stats_to_hud:
 
 	call set_cursor_pos
 
-	mov si, .lv_msg
+	mov si, .xp_msg
 	call sprint	
-	mov ax, [_player_lv]
+	mov ax, [_player_xp]
 	call iprint
 
 	inc bh
@@ -486,7 +486,7 @@ gui_stats_to_hud:
 	popa
 	ret
 
-	.lv_msg db 'LEVEL: ', 0
+	.xp_msg db 'EXP:   ', 0
 	.hp_msg db 'HEALTH:', 0
 	.ac_msg db 'ARMOR: ', 0
 	.pw_msg db 'POWER: ', 0

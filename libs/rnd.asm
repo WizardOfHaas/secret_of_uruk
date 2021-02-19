@@ -17,3 +17,18 @@ rnd:
     ; Modulo 65536, AX = (multiplier*seed+increment) mod 65536
     mov [_rnd_seed], ax          ; Update seed = return value	
 	ret
+
+;;Map biome tables
+;Desert
+;Scrub
+;Marsh
+;Ruins
+
+;The biggie: somehow make random maps....
+;   1) Select set of tiles/items/monsters from biome table
+;   2) Randomize grid in some reasonable pattern, must be:
+;       - Traversable
+;       - Interesting
+;   3) Do we have a prebuilt section in this grid? If so, load it.
+rnd_generate_map:
+    ret

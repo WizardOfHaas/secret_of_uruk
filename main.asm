@@ -5,11 +5,14 @@
 
 	db 'main.asm'
 
-	_default_font: dw 0x0000, 0x0500
-
 start:
 	cli
-	xor ax, ax		;make it zero
+	xor ax, ax
+    ;mov cs, ax
+	;mov ds, ax
+	mov es, ax
+    mov fs, ax
+
 	mov ss, ax		;stack starts at 0
 	mov sp, 0FFFFh	;star stack at end of segment
  	sti
@@ -39,12 +42,8 @@ start:
 	call sprint
 
 	;;Save over default font set
-	push es
-	mov ax, 0; word [_default_font]
-	mov es, ax
-	mov di, 0x0500 ;word [_default_font + 2]
-	call img_save_font
-	pop es
+    mov si, test_map_font
+    call img_load_font_pack
 
 	mov bp, alert_frame
 	mov cx, 7
@@ -56,7 +55,6 @@ start:
 	;;Load up the starting map...
 	mov si, test_map
 	call gui_render_map
-	call gui_update_fov
 
 	;;Load the hud, print intro message, show stats
 	call gui_render_hud
@@ -107,6 +105,7 @@ panic_msg:		db 'Kernel Panic!', 0
 mm_msg:			db 'Init memory manager...   ', 0
 kb_msg:			db 'kb detected', 10, 0
 hud_msg:		db 'Welcome to the...    ', 'D A N G E R Z O N E!', 10, 0
+_default_font: dw 0x0000, 0x0500
 
 %include "./libs/mem.asm"
 %include "./libs/string.asm"
@@ -121,13 +120,12 @@ hud_msg:		db 'Welcome to the...    ', 'D A N G E R Z O N E!', 10, 0
 %include "./libs/snd.asm"
 %include "./libs/magic.asm"
 %include "./libs/monsters/monster.asm"
+%include "./libs/maps/map.asm"
 
 %include "./libs/items/items.asm"
 %include "./libs/menus/menu.asm"
 
 %include "./img/frame.img"
-%include "./img/map.asm"
-
 ;	CX:DX - ms to wait
 bios_wait:
 	pusha

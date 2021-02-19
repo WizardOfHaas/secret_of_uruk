@@ -3,6 +3,7 @@
 
 	BITS 16
 	ORG 0x7C00
+    ;ORG 0x100
 
 	jmp short bootloader_start	; Jump past disk description section
 	nop				; Pad out before disk description

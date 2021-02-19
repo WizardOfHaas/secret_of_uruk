@@ -62,20 +62,19 @@ combat_start:
 	call keybd_wait
 
     mov si, word [current_monster_tab]
+
+    ;;Get Monster XP
+    mov di, word [si + 4]
+    mov ax, word [di + 17]
+    call player_add_xp
+
 	call monster_remove_from_map
 
-	push es
-	mov ax, 0 ;word [_default_font]
-	mov es, ax
-	mov bp, 0x0500 ;word [_default_font + 2]
-	mov si, bp
-
-	xor dx, dx
-	mov cx, 512
-	;call img_set_font
-	pop es
+    mov si, test_map_font
+    call img_load_font_pack
 
 	call gui_render_map_screen
+    call gui_stats_to_hud
 	jmp .done
 
 .player_dies:
