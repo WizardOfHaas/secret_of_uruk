@@ -150,8 +150,8 @@ player_move_to_map:
     ;Refrence the map table for map ID -> address(later will be file name)
     ;Load up the new map
     ;Adjust player world map and local map locations
-    call print_regs
     mov bx, word [player_map_cell] ;;BL -> X, BH -> Y
+    mov cx, word [player_pos]
 
     cmp ah, 'N'
     je .north
@@ -168,27 +168,41 @@ player_move_to_map:
     jmp .done
 
 .north:
-    dec BH
+    dec bh
+    mov ch, 22
     jmp .check
 .south:
-    inc BH
+    inc bh
+    mov ch, 7
     jmp .check
 .east:
     inc bl
+    mov cl, 1
     jmp .check
 .west:
     dec bl
+    mov cl, 78
 
 .check:
+    call print_regs
+
     cmp bl, byte [world_map_size]
     jg .done
+
+    cmp bl, 0
+    jl .done
 
     cmp bh, byte [world_map_size]
     jg .done
 
-    call map_fetch_from_table
+    cmp bh, 0
+    jl .done
 
-    call print_regs
+    mov word [player_map_cell], bx
+    mov word [player_pos], cx
+
+    call map_fetch_from_table
+    call map_load
 
 .done:
     ret
@@ -258,8 +272,6 @@ player_add_glyph:
 	mov si, player_glyphs
 	add si, bx
 	mov byte [si], al
-
-	call print_regs
 
 	call gui_glyphs_to_hud
 	pop bx

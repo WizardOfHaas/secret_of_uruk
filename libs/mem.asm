@@ -277,8 +277,7 @@ malloc:
 
 	;Test if we have enough RAM, die otherwise
 	mov cx, word [es:si + ll_node.size]
-	call print_regs
-
+    
 	cmp ax, cx
 	jl kernel_panic							;We outta RAM! PANIC!
 
@@ -468,7 +467,7 @@ memset:
 	cmp ax, 0						;Are we done with chunk?
 	je .done
 
-	mov [fs:di], bx					;Set to specified value
+	mov [fs:di], bl					;Set to specified value
 
 	;Increment counter and location
 	inc di

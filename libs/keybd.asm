@@ -51,8 +51,6 @@ __old_keyb_isr:
 	jnz .done   ; don't repeat
 .done:
 	mov ax, word [.isr_key]
-
-	call print_regs
 	
 	iret
 

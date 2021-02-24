@@ -102,6 +102,7 @@ gui_frame:
 gui_render_map:
 	push cx
 	push bx
+    push si
 
 	mov word [current_map], si	;;Save current map struct
 
@@ -127,7 +128,8 @@ gui_render_map:
 	cmp byte [di], 0	;;Is this an unseen tile?
 	je .darkness
 
-	call cprint
+	;;call cprint
+    call map_plot_tile
 
 .wrap:
 	dec cl
@@ -149,6 +151,7 @@ gui_render_map:
 	jmp .loop
 
 .done:
+    pop si
 	pop bx
 	pop cx
 	ret
@@ -262,7 +265,7 @@ gui_map_check_line:
 	jne .blocked
 
 	;;Should add check for previosuly uncovered tiles... improve speed...
-
+  
 	call gui_map_show_tile
 
 	cmp bx, word [.x]
@@ -348,7 +351,8 @@ gui_map_show_tile:
 
 	add si, ax
 	mov al, byte [si]
-	call cprint
+	;;call cprint
+    call map_plot_tile
 
 .done:
 	;mov byte [char_attr], 7	
