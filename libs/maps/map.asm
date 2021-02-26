@@ -133,6 +133,50 @@ map_fill_placeholders:
     popa
     ret
 
+map_check_links:
+    push bx
+    push ax
+    ;;Get us to the links table
+    push bx
+    mov si, word [current_map]
+    add si, 1249
+
+    movzx ax, byte [si]
+    inc si
+
+    mov bx, 6
+    mul bx
+
+    add si, ax
+    pop bx
+
+    movzx cx, byte [si] ;;Get size of table
+    inc si
+.loop:
+    mov dx, word [si]
+    cmp word [si], bx
+    je .ok
+
+    dec cx
+    add si, 5
+    cmp cx, 0
+    jg .loop
+
+    mov si, 0
+    jmp .done
+.ok:
+    movzx ax, byte [si + 4]
+    mov bx, 2
+    mul bx
+    mov di, loaded_maps
+    add di, ax
+    mov si, word [di]
+.done:
+    call print_regs
+    pop ax
+    pop bx
+    ret
+
 ;;32 sweet random tiles...
 map_random_tiles:
     db 11, 11, 11, 11, 11, 11, 11, 11

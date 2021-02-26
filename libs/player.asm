@@ -107,11 +107,17 @@ player_keybd_handle:
 	cmp ah, 'M'
 	je .monster_hit
 
+    cmp ah, 'L'
+    je .link_hit
+
 	jmp .next_turn
 
 	;;Need to do logic to deal with monster/item differently
 .left_map:
     call player_move_to_map
+    jmp .done
+.link_hit:
+    call map_load
     jmp .done
 .item_hit:
 	mov di, si
@@ -184,8 +190,6 @@ player_move_to_map:
     mov cl, 78
 
 .check:
-    call print_regs
-
     cmp bl, byte [world_map_size]
     jg .done
 
@@ -211,14 +215,19 @@ player_move_to_map:
 ;	BX - new x/y position of player
 ;	Sets carry on collision
 ;	SI - item/entity handler, if found
-
-;;; Currently FUCKED... can walk off screen all of a sudden...
 player_check_move:
 	call get_char_at
 	xor si, si
 
 	cmp al, 46
 	je .ok
+
+    ;;Add in check for a map link
+    mov ah, 'L'
+    
+    call map_check_links
+    cmp si, 0
+    jne .ok
 
 	mov ah, 'I' ;;Mark as item
 

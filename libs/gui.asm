@@ -167,7 +167,6 @@ gui_update_fov:
 	call gui_map_check_line
 	jc .next_1
 
-	;call gui_map_show_tile
 .next_1:
 	inc bh
 	cmp bh, 16
@@ -180,7 +179,6 @@ gui_update_fov:
 	call gui_map_check_line
 	jc .next_2
 
-	;call gui_map_show_tile
 .next_2:
 	inc bh
 	cmp bh, 16
@@ -195,6 +193,8 @@ gui_update_fov:
 	xor dx, dx
 
 	mov cx, word [player_pos]
+    jmp .loop_3 ;;Skip the triks...
+
 	cmp cl, 14
 	jl .loop_3	;;We are going to start at 0
 
@@ -213,7 +213,8 @@ gui_update_fov:
 
 .next_3:
 	inc bl
-	cmp bl, cl
+	;cmp bl, cl
+    cmp bl, 78
 	jl .loop_3
 
 	mov bx, dx
@@ -224,7 +225,8 @@ gui_update_fov:
 
 .next_4:
 	inc bl
-	cmp bl, cl
+	;cmp bl, cl
+    cmp bl, 78
 	jl .loop_4
 
 	popa
@@ -341,12 +343,12 @@ gui_map_show_tile:
 	add bh, 7
 	call set_cursor_pos
 
-	cmp byte [di], 1
-	je .done
-
 	mov di, field_of_view
 	add di, ax
 	
+    cmp byte [di], 1 ;;This is needed for speed, but seems to cause breakage...
+    ;je .done
+
 	mov byte [di], 1
 
 	add si, ax
