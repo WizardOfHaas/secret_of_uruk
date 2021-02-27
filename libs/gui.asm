@@ -163,6 +163,7 @@ gui_update_fov:
 
 	;;Scan over left side of screen
 	xor bx, bx
+    mov dl, 'H'
 .loop_1:
 	call gui_map_check_line
 	jc .next_1
@@ -192,6 +193,7 @@ gui_update_fov:
 	xor bx, bx
 	xor dx, dx
 
+    mov dl, 'V'
 	mov cx, word [player_pos]
     jmp .loop_3 ;;Skip the triks...
 
@@ -217,8 +219,9 @@ gui_update_fov:
     cmp bl, 78
 	jl .loop_3
 
-	mov bx, dx
+	;mov bx, dx
 	mov bh, 16
+    mov bl, 0
 .loop_4:
 	call gui_map_check_line
 	jc .next_4
@@ -232,35 +235,115 @@ gui_update_fov:
 	popa
 	ret
 
+;;;This is hyper-jank... but fine
 ;	SI - map struct
 ;	BX - tile x/y
 gui_map_check_line:
+    call gui_map_check_line_v
+    call gui_map_check_line_h
+    ret
+
+gui_map_check_line_h:
 	pusha
-	mov word [.x], bx
+	mov word [.x], bx           ;;Save outer coordinate
 
-	mov cx, word [player_pos]
+	mov cx, word [player_pos]   ;;Grab player position
 
+    ;;Shift into MAP SPACE!
 	sub cl, 1
 	sub ch, 7
-	mov word [.px], cx
+	mov word [.px], cx          ;;Save a local copy
 
-	mov bx, cx
+	mov bx, cx                  ;;Start at the player's location
 .loop:
-	cmp bl, byte [.x]
-	jg .sub_x
-	.sub_x_done:
-
 	cmp bh, byte [.y]
 	jg .sub_y
-	.sub_y_done:
+
+	cmp bh, byte [.y]
+	jl .add_y
+
+	cmp bl, byte [.x]
+	jg .sub_x
 
 	cmp bl, byte [.x]
 	jl .add_x
-	.add_x_done:
+
+	.add_y_done:
+    .sub_y_done:
+
+    .add_x_done:
+    .sub_x_done:
+
+	call gui_map_get_tile
+	cmp al, '.'
+	jne .blocked
+
+	;;Should add check for previosuly uncovered tiles... improve speed...
+  
+	call gui_map_show_tile
+
+	cmp bx, word [.x]
+	jne .loop
+	jmp .ok
+
+.sub_x:
+	sub bl, 1
+	jmp .sub_x_done
+.sub_y:
+	sub bh, 1
+	jmp .sub_y_done
+.add_x:
+	add bl, 1
+	jmp .add_x_done
+.add_y:
+	add bh, 1
+	jmp .add_y_done
+
+.blocked:
+	call gui_map_show_tile
+	stc
+	jmp .done
+.ok:
+	clc
+.done:
+	popa
+	ret
+
+    .x db 0
+    .y db 0
+
+    .px db 0
+    .py db 0
+
+gui_map_check_line_v:
+	pusha
+	mov word [.x], bx           ;;Save outer coordinate
+
+	mov cx, word [player_pos]   ;;Grab player position
+
+    ;;Shift into MAP SPACE!
+	sub cl, 1
+	sub ch, 7
+	mov word [.px], cx          ;;Save a local copy
+
+	mov bx, cx                  ;;Start at the player's location
+.loop:
+	cmp bl, byte [.x]
+	jg .sub_x
+
+	cmp bl, byte [.x]
+	jl .add_x
+
+	cmp bh, byte [.y]
+	jg .sub_y
 
 	cmp bh, byte [.y]
 	jl .add_y
 	.add_y_done:
+    .sub_y_done:
+
+    .add_x_done:
+    .sub_x_done:
 
 	call gui_map_get_tile
 	cmp al, '.'
@@ -353,7 +436,6 @@ gui_map_show_tile:
 
 	add si, ax
 	mov al, byte [si]
-	;;call cprint
     call map_plot_tile
 
 .done:

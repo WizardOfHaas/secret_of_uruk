@@ -75,7 +75,8 @@ _monster_cat_handler:
 	jmp .done
 .damaged:
 .move:
-	call monster_move_chase
+	;call monster_move_chase
+    call monster_move_rnd
 .done:
 	ret
 

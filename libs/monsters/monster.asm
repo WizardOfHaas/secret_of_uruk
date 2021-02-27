@@ -160,6 +160,36 @@ monster_move_chase:
 	call monster_move
 	ret
 
+monster_move_rnd:
+	call rnd
+
+    cmp al, 0x30
+    jg .x
+
+    cmp ah, 0x30
+    jg .inc_y
+    jmp .dec_y
+
+.x:
+    cmp ah, 0x30
+    jg .inc_x
+    jmp .dec_x
+
+.inc_x:
+	inc bl
+	jmp .done
+.dec_x:
+	dec bl
+	jmp .done
+.inc_y:
+	inc bh
+	jmp .done
+.dec_y:
+	dec bh
+.done:
+	call monster_move
+	ret
+
 ;Check table for monster at char, return pointer to table entry
 ;   AL - monster char code
 ;   BX - location on screen
