@@ -1,5 +1,5 @@
-	org 0x7E00		;Same as boot sector's %ENTRY
-	;org 0x100
+	;org 0x7E00		;Same as boot sector's %ENTRY
+	org 0x100
 
 	jmp short start	;Jump to startup
 
@@ -23,7 +23,7 @@ start:
 
  	;Setup cursor and screen
  	;call cursor_on
- 	call clear_screen
+ 	;call clear_screen
 
  	;Print booting message
  	mov si, boot_msg

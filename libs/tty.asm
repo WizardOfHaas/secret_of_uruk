@@ -371,6 +371,7 @@ scroll:
 ;Scroll buffer
 scroll_buffer:
 	pusha
+    push es
 
 	;Scroll screen buffer
 	mov ax, 0x00				;Set fs to text memory
@@ -388,6 +389,7 @@ scroll_buffer:
 	mov byte [xpos], 0
 	mov byte [ypos], 24
 
+    pop es
 	popa
 	ret
 

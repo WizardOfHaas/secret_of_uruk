@@ -20,6 +20,7 @@ init_keybd:
 	mov si, word keybd_isr
 	mov ax, 0x09
 	
+    push es
 	xor bx, bx
 	mov es, bx
 	
@@ -28,6 +29,7 @@ init_keybd:
 	mov di, ax
 	mov word [es:di], si
 	mov word [es:di + 2], cs
+    pop es
 	sti
 	ret
 
