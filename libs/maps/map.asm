@@ -62,8 +62,7 @@ map_clear_fov:
     pusha
     mov di, field_of_view
     mov ax, 1248
-    xor bx, bx
-    mov fs, bx
+    mov bx, 0
     call memset
     popa
     ret
