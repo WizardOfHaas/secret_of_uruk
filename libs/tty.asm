@@ -153,7 +153,7 @@ get_char_at:
 	movzx bx, bl			;Get x cursor position
 	shl bx, 1				;times 2 to skip attrib
  	
- 	mov di, 0		;start of video memory
+ 	mov di, 0		        ;start of video memory
 	add di, ax      		;add y offset
 	add di, bx      		;add x offset
 

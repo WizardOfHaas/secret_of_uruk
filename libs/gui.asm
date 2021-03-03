@@ -105,18 +105,11 @@ gui_render_map:
     push si
 
 	mov word [current_map], si	;;Save current map struct
-
-	;mov bl, 0
-	;mov bh, 6
-	;mov cl, 78
-	;mov ch, 16
-	;call gui_frame
 	
 	mov cl, 78
     mov bl, 1
     mov bh, 7
 	call set_cursor_pos
-    ;call block_print
 
 	mov di, field_of_view
 .loop:
@@ -277,8 +270,6 @@ gui_map_check_line_h:
 	call gui_map_get_tile
 	cmp al, '.'
 	jne .blocked
-
-	;;Should add check for previosuly uncovered tiles... improve speed...
   
 	call gui_map_show_tile
 
@@ -348,8 +339,6 @@ gui_map_check_line_v:
 	call gui_map_get_tile
 	cmp al, '.'
 	jne .blocked
-
-	;;Should add check for previosuly uncovered tiles... improve speed...
   
 	call gui_map_show_tile
 
@@ -430,7 +419,7 @@ gui_map_show_tile:
 	add di, ax
 	
     cmp byte [di], 1 ;;This is needed for speed, but seems to cause breakage...
-    ;je .done
+    je .done         ;; map gets weird after a monster fight. may need to change cleanup routines
 
 	mov byte [di], 1
 

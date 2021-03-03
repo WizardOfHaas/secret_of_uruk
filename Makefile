@@ -14,3 +14,7 @@ doit :
 	make
 	make install
 	make test
+
+dos :
+	nasm main.asm -o test.com
+	dosbox test.com
