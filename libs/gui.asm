@@ -104,27 +104,35 @@ gui_render_map:
 	push bx
     push si
 
+	mov bl, 0
+	mov bh, 6
+	mov cl, 80
+	mov dx, 78*19
+	call block_clear
+
 	mov word [current_map], si	;;Save current map struct
-	
-	mov cl, 78
+
     mov bl, 1
     mov bh, 7
-	call set_cursor_pos
+	;call set_cursor_pos
 
+	mov cl, 78
 	mov di, field_of_view
 .loop:
+	call set_cursor_pos
+
 	;;Print it out...
 	mov al, byte [si]
 	cmp al, 0
 	je .done
 
 	cmp byte [di], 0	;;Is this an unseen tile?
-	je .darkness
+	je .wrap
 
-	;;call cprint
     call map_plot_tile
 
 .wrap:
+    inc bl
 	dec cl
 	cmp cl, 0
 	jg .next
@@ -132,12 +140,7 @@ gui_render_map:
 	mov cl, 78
 	inc bh
 	mov bl, 1
-	call set_cursor_pos
-	jmp .next
-.darkness:
-	inc bl
-	call set_cursor_pos
-	jmp .wrap
+    
 .next:
 	inc si
 	inc di
@@ -397,8 +400,6 @@ gui_map_show_tile:
 
 	push bx
 
-	;mov byte [char_attr], 2
-
 	xor cx, cx
 	xor dx, dx
 
@@ -418,13 +419,18 @@ gui_map_show_tile:
 	mov di, field_of_view
 	add di, ax
 	
-    cmp byte [di], 1 ;;This is needed for speed, but seems to cause breakage...
-    je .done         ;; map gets weird after a monster fight. may need to change cleanup routines
+	add si, ax
+	mov al, byte [si]   ;;Get the char to print
 
+    cmp al, '.'
+    jne .force
+
+    cmp byte [di], 1 ;;This is needed for speed, but seems to cause breakage...
+    je .done         ;; some items will dissapear, so we may need to do some checks about al
+
+.force:
 	mov byte [di], 1
 
-	add si, ax
-	mov al, byte [si]
     call map_plot_tile
 
 .done:

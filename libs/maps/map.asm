@@ -15,11 +15,11 @@ map_load:
     ;;Clear FOV
     call map_clear_fov
 
-    mov bl, 0
-	mov bh, 6
-	mov cl, 80
-	mov dx, 78*16
-	call block_clear
+    ;mov bl, 0
+	;mov bh, 6
+	;mov cl, 80
+	;mov dx, 78*16
+	;call block_clear
     pop si
 
     ;;Load up this map
