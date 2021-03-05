@@ -171,7 +171,6 @@ map_check_links:
     add di, ax
     mov si, word [di]
 .done:
-    call print_regs
     pop ax
     pop bx
     ret

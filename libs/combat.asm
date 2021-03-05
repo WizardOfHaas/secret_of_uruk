@@ -84,7 +84,7 @@ combat_start:
 .done:
 	ret
 
-	.msg db 'lol, ded', 0
+	.msg db 'YOUR LIFE DRAWS TO A CLOSE', 0
 	.win_msg db 'YOU LIVE, THIS TIME   ', 'PRESS A KEY TO CONTINUE...', 0
 
 combat_roll_dice:

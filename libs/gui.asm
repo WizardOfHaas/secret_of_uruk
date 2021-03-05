@@ -438,6 +438,38 @@ gui_map_show_tile:
 	popa
 	ret
 
+;   BX - x/y position
+gui_get_fov_tile:
+    push di
+    push cx
+    push dx
+    push bx
+    
+	sub bl, 1
+	sub bh, 7
+
+	xor cx, cx
+	xor dx, dx
+
+	mov cl, bh
+
+	mov ax, 78
+	mul cx
+	
+	mov dl, bl
+	add ax, dx
+
+    mov di, field_of_view
+    add di, ax
+
+    mov al, byte [di]
+
+    pop bx
+    pop dx
+    pop cx
+    pop di
+    ret
+
 ;	SI - map struct
 ;	BL - x
 ;	BH - y

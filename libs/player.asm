@@ -3,8 +3,10 @@
 player_map_cell: dw 0
 
 player_pos:
-	_player_x: db 40
-	_player_y: db 19
+	;_player_x: db 40
+	;_player_y: db 19
+    _player_x: db 1
+    _player_y: db 7
 
 player_stats:
 	_player_xp:	dw 1	;;EXP

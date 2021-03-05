@@ -86,10 +86,16 @@ monsters_render_to_map:
 	call word [si + 25]
 	mov bx, word [di]
 
+    call gui_get_fov_tile
+    cmp al, 0
+    je .skip
+
 	call set_cursor_pos
 
 	mov al, byte [si]
 	call cprint
+    
+.skip:
 	pop dx
 	pop cx
 
@@ -123,9 +129,16 @@ monster_move:
 
 	push bx
 	mov bx, word [di]
+
+    call gui_get_fov_tile
+    cmp al, 0
+    je .skip
+
 	call set_cursor_pos
 	mov al, '.'
 	call cprint
+
+.skip:
 	pop bx
 
 	mov word [di], bx

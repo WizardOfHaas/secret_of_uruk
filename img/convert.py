@@ -16,16 +16,14 @@ M = 16
 charCode = 97
 
 def to_bin(tile, code):
-	ret = "db " + str(code) + "\n"
+	#ret = "db " + str(code) + "\n"
+    ret = ""
 
-	for l in tile:
-		d = map(lambda x: 0 if x else 1, l)
+    for l in tile:
+		d = map(lambda x: 1 if x else 0, l)
 		ret += "db " + "".join(str(x) for x in d) + "b\n"
 
-        ret += "dw _item_glyph_handler\n"
-        ret += "db 'A STRANGE GLYPH', 0\n"
-
-	return ret
+    return ret
 
 def show(tiles):
 	matplotlib.use("TKAgg")
@@ -52,6 +50,7 @@ tiles = [data[x:x+M,y:y+N] for x in range(0,data.shape[0],M) for y in range(0,da
 font_pack = []
 tile_map = []
 
+#Clean up duplicates
 for tile in tiles:
 	d = to_bin(tile, charCode)
 

@@ -35,7 +35,7 @@ dw _monster_cat_handler
 db 'the chonk', 0
 
 _monster_cat_img:
-%include "./img/cat.img"
+%include "./img/lion.img"
 
 ;Monster Combat handler, ran each turn of combat
 ;	AL - event type to handle...
