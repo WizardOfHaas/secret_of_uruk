@@ -1,5 +1,5 @@
 ; boot.asm
-%define _ENTRY 0x7E00
+%define _ENTRY 0x100
 
 	BITS 16
 	ORG 0x7C00

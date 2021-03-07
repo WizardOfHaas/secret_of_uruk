@@ -11,8 +11,8 @@ player_pos:
 player_stats:
 	_player_xp:	dw 1	;;EXP
 	_player_hp: dw 100	;;Health
-	_player_ac: dw 0	;;Armor Class
-	_player_pw:	dw 0	;;Power
+	_player_ac: dw 1	;;Armor Class, subtracted from damage
+	_player_pw:	dw 1	;;Power
 
 player_glyphs: times 26 db '-'
 	db 0
@@ -259,8 +259,12 @@ player_display:
 	pop bx
 	ret
 
+;Need to implement magic vs physical damage, AC will only affect phys damage
 ;	AX - how much it hurts
 player_take_damage:
+    ;Sub off armor class
+    sub ax, word [_player_ac]
+
 	cmp word [_player_hp], ax
 	jl .dead
 

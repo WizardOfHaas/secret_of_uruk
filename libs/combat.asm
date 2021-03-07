@@ -3,6 +3,7 @@
 current_monster_tab: dw 0
 current_monster: dw 0
 current_monster_hp: dw 0
+current_monster_ac: dw 0
 
 ;;Table for scaling POW-based damage
 combat_power_scale:
@@ -15,13 +16,12 @@ combat_start:
     mov word [current_monster], ax
 
 	mov di, ax
+    mov ax, word [di + 21]
+    mov word [current_monster_ac], ax
 	mov ax, word [di + 19]
 	mov word [current_monster_hp], ax
 
-    ;;This needs to be fixed
 	call gui_render_combat
-
-	;call gui_render_monster_health
 .test_loop:
 	cmp word [current_monster_hp], 0
 	je .player_wins

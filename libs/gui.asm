@@ -425,8 +425,8 @@ gui_map_show_tile:
     cmp al, '.'
     jne .force
 
-    cmp byte [di], 1 ;;This is needed for speed, but seems to cause breakage...
-    je .done         ;; some items will dissapear, so we may need to do some checks about al
+    cmp byte [di], 1 ;;This is needed for speed
+    je .done 
 
 .force:
 	mov byte [di], 1
