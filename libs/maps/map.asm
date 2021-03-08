@@ -5,6 +5,100 @@
 current_map: dw 0
 current_map_id: db 0
 
+map_generate_cave:
+	pusha
+	;mov si, start_free_mem	;;Set si as our map buffer location
+	mov si, test_map
+	
+	;Initialize to non-walkable spaces
+	mov di, si
+    mov ax, 1248
+    mov bx, 219
+    call memset
+	mov byte [di + 1249], 0
+	
+	mov bx, [player_pos]		;;Set initial cell
+	sub bl, 1
+	sub bh, 7
+
+	mov cx, 1000				;;Set number of iterations for our walk
+
+.loop:
+	call pos_to_offset
+	mov di, si
+	add di, ax
+
+	mov byte [di], '.'
+
+	call rnd
+	cmp al, 0x30
+	jg .x
+
+.y:
+	cmp ah, 0x30
+	jg .dec_y
+	
+.inc_y:
+	inc bh
+	jmp .next
+.dec_y:
+	dec bh
+	jmp .next
+
+.x:
+	cmp ah, 0x03
+	jg .dec_x
+
+.inc_x:
+	inc bl
+	jmp .next
+.dec_x:
+	dec bl
+	jmp .next
+
+.next:
+	dec cx
+	cmp cx, 0
+	jg .loop
+
+	call print_regs
+
+	popa
+	ret
+
+;	BX - x/y
+;
+;	AX - linear offset in map buffer
+pos_to_offset:
+	push cx
+	push dx
+
+	cmp bl, 77
+	jl .x_ok
+
+	mov bl, 77
+
+.x_ok:
+	cmp bh, 15
+	jl .y_ok
+
+	mov bh, 15
+
+.y_ok:
+	xor cx, cx
+	xor dx, dx
+
+	mov cl, bh
+	mov ax, 78
+	mul cx
+	
+	mov dl, bl
+	add ax, dx
+
+	pop dx
+	pop cx
+	ret
+
 ;   SI - struct of map to load
 map_load:
     push si
@@ -14,12 +108,6 @@ map_load:
 
     ;;Clear FOV
     call map_clear_fov
-
-    ;mov bl, 0
-	;mov bh, 6
-	;mov cl, 80
-	;mov dx, 78*16
-	;call block_clear
     pop si
 
     ;;Load up this map
@@ -86,8 +174,6 @@ map_fetch_from_table:
     mov di, world_map
     add di, ax
     movzx ax, byte [di]
-
-	call print_regs
 
     ;;Refrence loaded maps table
     mov di, loaded_maps

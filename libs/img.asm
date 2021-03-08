@@ -107,8 +107,6 @@ img_set_font: ;;Something is wrong... here of all places? At least in dosbox
     mov bl, 0          ; RAM block
     mov ax, 1100h       ; change font to our font
 
-    call print_regs
-
     int 10h
 
     popa

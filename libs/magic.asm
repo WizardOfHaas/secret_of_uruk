@@ -84,8 +84,6 @@ magic_pay_cost:
 
 ;;Simple spell, costs 5 HP, does 1 die to everyone
 _magic_quake:
-    call print_regs
-
 	mov si, .msg
 	call gui_print_combat_msg
 
