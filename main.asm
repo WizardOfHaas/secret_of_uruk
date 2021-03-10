@@ -53,8 +53,7 @@ start:
 	call rnd_init	;;Seed up the random number generator
 
 	;;Load up the starting map...
-	;;SIKE! RANDOMLY GENERATE A CAVE!
-	call map_generate_cave
+	;;call map_generate_cave ;;This is a fun secret to string in later
 
 	mov si, test_map
 	call gui_render_map

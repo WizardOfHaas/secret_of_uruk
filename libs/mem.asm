@@ -444,8 +444,8 @@ memcpy:
 	je .done
 
 	;Move over the next byte
-	mov bx, [es:si]
-	mov [fs:di], bx
+	mov bl, byte [es:si]
+	mov byte [fs:di], bl
 
 	;Increment the source and destinations
 	inc si

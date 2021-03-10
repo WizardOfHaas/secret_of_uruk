@@ -707,23 +707,29 @@ gui_print_combat_msg:
 
 .print:
 	call block_print
-	inc byte [.pos + 1]
-	cmp byte [.pos + 1], 24
-	jl .done
+	;inc byte [.pos + 1]
+	;cmp byte [.pos + 1], 24
+	;jl .done
 	
 	;;For now clear on overflow, block_print needs to be rewritten to scroll blocks...
-	mov byte [.pos + 1], 7
+	;mov byte [.pos + 1], 7
+	;mov bl, 27
+    ;mov bh, 6
+    ;mov cl, 32
+    ;mov dx, 576
+    ;call block_clear
+
+    mov bh, 7
 	mov bl, 27
-    mov bh, 6
-    mov cl, 32
-    mov dx, 576
-    call block_clear
+    mov cl, 64
+    mov ch, 20
+    call scroll_block
 
 .done:
     popa
 	ret
 
-	.pos db 27, 7
+	.pos db 27, 20
 
 gui_clear_combat_msg:
 	pusha

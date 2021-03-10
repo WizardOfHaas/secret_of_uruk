@@ -7,6 +7,83 @@ xpos: db 0
 ypos: db 0
 char_attr: db 0x07
 
+;Scroll a block of the text-mode screen
+;   BX - top left corner
+;   CL - width (in bytes, so 2 * chars)
+;   CH - last row in block
+scroll_block:
+    pusha
+    push es
+    push fs
+    ;;Calcualte offset of 1st line
+    ;;Calculate offset of 2nd line
+    ;;Copy 2nd line over 1st line
+    ;;...then do this again for every other line(up to CH)
+
+    ;;Save initial pos
+    mov word [.pos], bx
+
+    ;;We will be using memcpy in a loop, so...
+    ;;  get out pointers ready
+    xor di, di
+    xor si, si
+	mov ax, 0xB800
+	mov es, ax
+    mov fs, ax
+
+    call screen_pos_to_offset   ;;Change to linear offset
+    add di, ax                  ;;This is out dest
+    inc bh                      ;;Advance to 2nd line
+    call screen_pos_to_offset   ;;Change to linear offset
+    add si, ax                  ;;Apply offset to source
+
+    call print_regs
+
+.loop:
+    movzx ax, cl    ;;Setup the length of each chunk to copy
+
+    call memcpy
+
+    inc bh
+    cmp bh, ch
+    je .done
+
+    call screen_pos_to_offset   ;;Change to linear offset
+    mov di, si                  ;;Bump up the dest to our last source
+    add si, ax                  ;;Apply offset to source
+
+    jmp .loop
+
+.done:
+    pop fs
+    pop es
+    popa
+    ret
+
+    .pos dw 0
+
+;Convert a x/y position to fancy offset, works on whole screen buffer
+;	BX - x/y
+;
+;	AX - linear offset in map buffer
+screen_pos_to_offset:
+	push cx
+	push dx
+    push bx
+
+	movzx ax, bh			;Get y cursor position
+	mov dx, 160				;2 bytes (char/attrib)
+	mul dx					;for 80 columns
+	movzx bx, bl			;Get x cursor position
+	shl bx, 1				;times 2 to skip attrib
+    add ax, bx
+
+    pop bx
+	pop dx
+	pop cx
+	ret
+
+
 ;Print block of text at given location
 ; need to refactor to use block_blit and strlen...
 ;	BL - x pos
