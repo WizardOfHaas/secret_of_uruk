@@ -696,6 +696,13 @@ gui_render_monster_health:
 
 gui_print_combat_msg:
     pusha
+
+    mov bh, 7
+	mov bl, 27
+    mov cl, 64
+    mov ch, 21
+    call scroll_block
+
 	mov bl, byte [.pos]
 	mov bh, byte [.pos + 1]
 	mov cl, 32
@@ -707,23 +714,6 @@ gui_print_combat_msg:
 
 .print:
 	call block_print
-	;inc byte [.pos + 1]
-	;cmp byte [.pos + 1], 24
-	;jl .done
-	
-	;;For now clear on overflow, block_print needs to be rewritten to scroll blocks...
-	;mov byte [.pos + 1], 7
-	;mov bl, 27
-    ;mov bh, 6
-    ;mov cl, 32
-    ;mov dx, 576
-    ;call block_clear
-
-    mov bh, 7
-	mov bl, 27
-    mov cl, 64
-    mov ch, 20
-    call scroll_block
 
 .done:
     popa

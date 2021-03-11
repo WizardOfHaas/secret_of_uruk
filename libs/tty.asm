@@ -8,59 +8,71 @@ ypos: db 0
 char_attr: db 0x07
 
 ;Scroll a block of the text-mode screen
-;   BX - top left corner
+;   BX - bottom left corner
 ;   CL - width (in bytes, so 2 * chars)
 ;   CH - last row in block
 scroll_block:
     pusha
+    push bx
+.loop:
+    call scroll_line
+
+    inc bh
+    cmp bh, ch
+    jl .loop
+
+    ;;We need to clear the last line
+    pop bx
+
+    push fs
+    
+    call screen_pos_to_offset
+    
+	mov ax, 0xB800
+    mov fs, ax
+
+    call screen_pos_to_offset
+    mov di, ax
+    movzx ax, cl
+    xor bx, bx
+
+    call print_regs
+
+    call memset
+
+    pop fs
+
+    popa
+    ret
+
+;Scroll up a single line on screen
+;   BX - top left corner
+;   CL - width (in bytes, so 2 * chars)
+scroll_line:
+    pusha
     push es
     push fs
-    ;;Calcualte offset of 1st line
-    ;;Calculate offset of 2nd line
-    ;;Copy 2nd line over 1st line
-    ;;...then do this again for every other line(up to CH)
-
-    ;;Save initial pos
-    mov word [.pos], bx
 
     ;;We will be using memcpy in a loop, so...
     ;;  get out pointers ready
-    xor di, di
-    xor si, si
 	mov ax, 0xB800
 	mov es, ax
     mov fs, ax
 
-    call screen_pos_to_offset   ;;Change to linear offset
-    add di, ax                  ;;This is out dest
-    inc bh                      ;;Advance to 2nd line
-    call screen_pos_to_offset   ;;Change to linear offset
-    add si, ax                  ;;Apply offset to source
+    call screen_pos_to_offset
+    mov si, ax
 
-    call print_regs
+    dec bh
+    call screen_pos_to_offset
+    mov di, ax
 
-.loop:
-    movzx ax, cl    ;;Setup the length of each chunk to copy
-
+    movzx ax, cl
     call memcpy
 
-    inc bh
-    cmp bh, ch
-    je .done
-
-    call screen_pos_to_offset   ;;Change to linear offset
-    mov di, si                  ;;Bump up the dest to our last source
-    add si, ax                  ;;Apply offset to source
-
-    jmp .loop
-
-.done:
     pop fs
     pop es
     popa
     ret
-
-    .pos dw 0
 
 ;Convert a x/y position to fancy offset, works on whole screen buffer
 ;	BX - x/y
