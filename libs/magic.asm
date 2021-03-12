@@ -19,6 +19,7 @@ magic_table:
 ;	AL - spell number
 ;	AH - who is casting? (M)onster/(P)layer
 cast_magic:
+    push ax
 	mov bl, 8
 	mul bl
 
@@ -27,9 +28,14 @@ cast_magic:
 
 	mov si, magic_table
 	add si, ax
+    pop ax
 
-	;call gui_print_combat_msg
+    cmp ah, 'P'
+    je .done
 
+	call gui_print_combat_msg
+
+.done:
 	mov ah, bh
 	call word [si + 6]
 	ret

@@ -44,6 +44,7 @@ _option_combat_magic_handler:
 	call magic_lookup
 	jnc .fail
 
+    mov ah, 'P'
 	call cast_magic
 
 	call itoa
