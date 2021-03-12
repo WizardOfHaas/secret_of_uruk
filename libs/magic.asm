@@ -28,7 +28,7 @@ cast_magic:
 	mov si, magic_table
 	add si, ax
 
-	call gui_print_combat_msg
+	;call gui_print_combat_msg
 
 	mov ah, bh
 	call word [si + 6]
