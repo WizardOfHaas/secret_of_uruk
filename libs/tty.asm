@@ -13,7 +13,6 @@ char_attr: db 0x07
 ;   CH - last row in block
 scroll_block:
     pusha
-    push bx
 .loop:
     call scroll_line
 
@@ -22,28 +21,16 @@ scroll_block:
     jl .loop
 
     ;;We need to clear the last line
-    pop bx
-
-    push fs
-    
-    call screen_pos_to_offset
-    
-	mov ax, 0xB800
-    mov fs, ax
-
-    call screen_pos_to_offset
-    mov di, ax
-    movzx ax, cl
-    xor bx, bx
-
-    call print_regs
-
-    call memset
-
-    pop fs
+    dec bh
+    call set_cursor_pos
+    mov si, .clear
+    call sprint
 
     popa
     ret
+
+    .clear times 32 db ' ' ;;Later, we will need to dynamically deal with the width of this buffer... :(
+    db 0
 
 ;Scroll up a single line on screen
 ;   BX - top left corner

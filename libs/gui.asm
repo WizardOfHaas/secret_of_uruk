@@ -700,7 +700,7 @@ gui_print_combat_msg:
     mov bh, 7
 	mov bl, 27
     mov cl, 64
-    mov ch, 21
+    mov ch, 23
     call scroll_block
 
 	mov bl, byte [.pos]
@@ -719,11 +719,10 @@ gui_print_combat_msg:
     popa
 	ret
 
-	.pos db 27, 20
+	.pos db 27, 22
 
 gui_clear_combat_msg:
 	pusha
-	mov byte [gui_print_combat_msg.pos + 1], 7
     mov bl, 27
     mov bh, 6
     mov cl, 32
@@ -736,12 +735,14 @@ gui_clear_combat_msg:
 ;	SI - prompt
 ;	DI - where to store input string
 gui_combat_prompt:
-	call gui_clear_combat_msg
 	call gui_print_combat_msg
 
-	inc byte [gui_print_combat_msg.pos + 1]
 	mov bl, 27
-	mov bh, 8
+	mov bh, 22
+
+    call strlen
+    add bl, al
+
 	call set_cursor_pos
 
 	call keybd_get_string

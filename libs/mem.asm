@@ -460,7 +460,7 @@ memcpy:
 ;Set chunk of memory to given value
 ;	FS:DI - destination to set
 ;	AX - number of bytes to set
-;	BX - value to set location to
+;	BL - value to set location to
 memset:
 	pusha
 .loop:
