@@ -268,7 +268,6 @@ monster_attack_phys:
 	call combat_roll_dice
 
 	;;Need to adjust based on POW here...
-	
 	call itoa
 	call gui_print_combat_msg
 
