@@ -9,6 +9,7 @@ _option_combat_run:
 	dw _option_combat_run_handler
 	db 'RUN AWAY', 0
 _option_combat_run_handler:
+    call combat_run
 	ret
 
 _option_combat_attack:

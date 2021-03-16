@@ -95,6 +95,13 @@ combat_roll_dice:
 
 	ret
 
+;Try to run away...
+combat_run:
+    mov al, 'R'
+    mov si, word [current_monster]
+    call word [si + 25]
+    ret
+
 ;Attack the current monster
 combat_attack:
 	call combat_roll_dice			;;AX is our base damage

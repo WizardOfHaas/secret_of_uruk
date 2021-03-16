@@ -42,6 +42,7 @@ _monster_cat_img:
 ;		M: move (DI is monster table entry)
 ;		D: damaged
 ;		C: combat turn
+;       R: player tries to run
 _monster_cat_handler:
 	cmp al, 'C'
 	je .combat
@@ -51,6 +52,9 @@ _monster_cat_handler:
 
 	cmp al, 'M'
 	je .move
+
+    cmp al, 'R'
+    je .run
 
 	jmp .done
 
@@ -73,6 +77,8 @@ _monster_cat_handler:
 	mov ah, 'M'
 	call cast_magic
 	jmp .done
+.run:
+    jmp .done
 .damaged:
 .move:
 	;call monster_move_chase
