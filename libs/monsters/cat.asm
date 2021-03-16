@@ -78,6 +78,16 @@ _monster_cat_handler:
 	call cast_magic
 	jmp .done
 .run:
+	call rnd
+	cmp al, 0x10
+	jg .run_trapped
+
+	clc			;;Clear carry, used to flat a failed run
+	jmp .done
+.run_trapped:
+	mov si, .trapped_msg
+	call gui_print_combat_msg
+	stc
     jmp .done
 .damaged:
 .move:
@@ -88,3 +98,4 @@ _monster_cat_handler:
 
 	.combat_msg db 'IT SWIPES WITH CLAWS', 0
 	.cast_msg db 'IT SPEAKS', 0
+	.trapped_msg db 'YOU ARE TRAPPED', 0

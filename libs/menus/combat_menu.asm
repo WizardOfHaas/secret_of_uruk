@@ -10,6 +10,14 @@ _option_combat_run:
 	db 'RUN AWAY', 0
 _option_combat_run_handler:
     call combat_run
+	jc .done
+
+	mov byte [combat_status], 0 ;;This will need to check the carry flag, but just auto-run for testing sake
+
+	;;Move the player, for safety and sanity
+	mov ax, word [player_last_pos]
+	mov word [player_pos], ax
+.done:
 	ret
 
 _option_combat_attack:

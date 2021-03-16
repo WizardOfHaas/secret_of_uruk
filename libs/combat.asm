@@ -5,11 +5,14 @@ current_monster: dw 0
 current_monster_hp: dw 0
 current_monster_ac: dw 0
 
+combat_status: db 0		;;Generic status for combat, for fancy async stuff
+
 ;;Table for scaling POW-based damage
 combat_power_scale:
 	
 ;	SI - monster table entry to fight with
 combat_start:
+	mov byte [combat_status], 1
 	mov word [current_monster_tab], si
 
     mov ax, word [si + 4]
@@ -22,9 +25,13 @@ combat_start:
 	mov word [current_monster_hp], ax
 
 	call gui_render_combat
+
 .test_loop:
 	cmp word [current_monster_hp], 0
 	je .player_wins
+
+	cmp byte [combat_status], 0
+	je .bail_combat
 
 	cmp word [_player_hp], 0
 	je .player_dies
@@ -49,6 +56,10 @@ combat_start:
 
 	jmp .test_loop
 
+.bail_combat:
+	call combat_end
+	jmp .done
+
 .player_wins:
 	;;Will need to...
 	;;	let monster know it died
@@ -70,11 +81,7 @@ combat_start:
 
 	call monster_remove_from_map
 
-    mov si, test_map_font
-    call img_load_font_pack
-
-	call gui_render_map_screen
-    call gui_stats_to_hud
+	call combat_end
 	jmp .done
 
 .player_dies:
@@ -86,6 +93,15 @@ combat_start:
 
 	.msg db 'YOUR LIFE DRAWS TO A CLOSE', 0
 	.win_msg db 'YOU LIVE, THIS TIME   ', 'PRESS A KEY TO CONTINUE...', 0
+
+combat_end:
+    mov si, test_map_font
+    call img_load_font_pack
+
+	call gui_render_map_screen
+    call gui_stats_to_hud
+	mov byte [combat_status], 0
+	ret
 
 combat_roll_dice:
 	call rnd	;;Get a big random number

@@ -2,6 +2,8 @@
 
 player_map_cell: dw 0
 
+player_last_pos: dw 0
+
 player_pos:
 	_player_x: db 40
 	_player_y: db 19
@@ -83,11 +85,12 @@ player_keybd_handle:
 	push ax
     push bx
     mov bx, word [player_pos]
+	mov word [player_last_pos], bx
     call set_cursor_pos
     mov al, 46
     call cprint
     pop bx
-		
+	
 	mov word [player_pos], bx
 
 	push si
