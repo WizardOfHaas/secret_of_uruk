@@ -7,8 +7,6 @@ player_last_pos: dw 0
 player_pos:
 	_player_x: db 40
 	_player_y: db 19
-    ;_player_x: db 1
-    ;_player_y: db 7
 
 player_stats:
 	_player_xp:	dw 1	;;EXP
@@ -278,6 +276,22 @@ player_take_damage:
 	mov word [_player_hp], 0
 .done:
 	ret
+
+;Handle player losing XP, either for damage or payment. Keep it from rolling over...
+; sets carry flag if XP is too low
+;   AX - how much XP to lose
+player_lose_xp:
+    cmp word [_player_xp], ax
+    jl .fail
+
+    sub word [_player_xp], ax
+    clc
+    jmp .done
+
+.fail:
+    stc
+.done:
+    ret
 
 ;We got a new glyph!
 ;	AL - glyph char code

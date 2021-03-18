@@ -10,10 +10,13 @@
 ;;		BX - HP Cost
 ;;		AX - HP Damage
 ;;	Any other effects are dealt with in the handler itself
-magic_spell_count: db 1
+magic_spell_count: db 2
 magic_table:
 	db "enkku", 0
 	dw _magic_quake
+
+    db "psy", 0, 0, 0
+    dw _magic_psy
 
 ;Cast a spell from the magic table
 ;	AL - spell number
@@ -100,10 +103,33 @@ _magic_quake:
 	shr ax, 14
 
 	call player_take_damage
+
 	mov si, word [current_monster]
-
 	call monster_take_damage
-
 	ret
 
 	.msg db "THE GROUND CRACKLES", 0
+
+;;EXP BLAST - cost 1 exp, does 2x die to enemy
+_magic_psy:
+    mov ax, 1
+    call player_lose_xp
+    jc .fail_to_cast
+
+	mov si, .msg
+	call gui_print_combat_msg
+
+	call rnd
+	shr ax, 12
+
+	mov si, word [current_monster]
+	call monster_take_damage
+    jmp .done
+.fail_to_cast:
+    mov si, .fail_msg
+    call gui_print_combat_msg
+.done:
+	ret
+
+	.msg db "YOU CHANNEL YOUR MEMORIES", 0
+    .fail_msg db "YOU LOST FOCUS", 0
