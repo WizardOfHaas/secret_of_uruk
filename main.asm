@@ -99,7 +99,7 @@ boot_msg:
 panic_msg:		db 'Kernel Panic!', 0
 mm_msg:			db 'Init memory manager...   ', 0
 kb_msg:			db 'kb detected', 10, 0
-hud_msg:		db 'Welcome to the...    ', 'D A N G E R Z O N E!', 10, 0
+hud_msg:		db 'BEHOLD....THE SECRET OF URUK', 10, 0
 _default_font: dw 0x0000, 0x0500
 
 %include "./libs/mem.asm"
