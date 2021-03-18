@@ -63,6 +63,7 @@ Graphical researouces are one of the more fun hacks in Secret of Uruk, in my opi
 
 An full image struct is packed as:
 
+```
 +--------------------------+
 | Number of tiles (1 byte) |
 +--------------------------+
@@ -84,5 +85,6 @@ An full image struct is packed as:
 +--------------------------+
 | Image tile N             |
 +--------------------------+
+```
 
 # Dev docs to follow...
