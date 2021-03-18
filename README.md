@@ -1,3 +1,4 @@
+```
   ██████ ▓█████  ▄████▄   ██▀███  ▓█████▄▄▄█████▓     
 ▒██    ▒ ▓█   ▀ ▒██▀ ▀█  ▓██ ▒ ██▒▓█   ▀▓  ██▒ ▓▒     
 ░ ▓██▄   ▒███   ▒▓█    ▄ ▓██ ░▄█ ▒▒███  ▒ ▓██░ ▒░     
@@ -17,6 +18,8 @@
   ░ ▒ ▒░  ░         ░░▒░ ░ ░   ░▒ ░ ▒░░░▒░ ░ ░ ░ ░▒ ▒░
 ░ ░ ░ ▒   ░ ░        ░░░ ░ ░   ░░   ░  ░░░ ░ ░ ░ ░░ ░ 
     ░ ░                ░        ░        ░     ░  ░   
+```
+
 ...this codebase is an absolute wrek...
 
 Welcome to my very dangerous, convoluted, and complicated video game. Secret of Uruk is a rogue-like game with some weird twists and turns, planned to be set in the ancient state of Uruk.
