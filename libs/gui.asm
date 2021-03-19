@@ -651,7 +651,9 @@ gui_render_combat:
 	add si, ax
 	inc si
 
+    mov byte [char_attr], 0x02
 	call img_display
+    mov byte [char_attr], 0x07
 
 	mov bl, 27
 	mov bh, 6

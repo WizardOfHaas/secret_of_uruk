@@ -340,6 +340,13 @@ player_decode_glyph_string:
 player_decode_glyph:
 	push si
 	push bx
+
+    cmp al, 97
+    jl .done
+
+    cmp al, 122
+    jg .done
+
 	;;Check if the player has found the glyph
 	xor bx, bx
 	mov bl, al

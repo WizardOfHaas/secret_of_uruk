@@ -35,11 +35,10 @@ _option_combat_talk:
 	dw _option_combat_talk_handler
 	db 'TALK', 0
 _option_combat_talk_handler:
-	mov si, .msg
-	call gui_print_combat_msg
+    mov al, 'T'
+    mov si, word [current_monster]
+    call word [si + 25]
 	ret
-
-	.msg db 'REEEEEE', 0
 
 _option_combat_magic:
 	dw _option_combat_magic_handler

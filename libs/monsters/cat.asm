@@ -44,6 +44,8 @@ _monster_cat_img:
 ;		C: combat turn
 ;       R: player tries to run
 _monster_cat_handler:
+    mov byte [char_attr], 0x02
+
 	cmp al, 'C'
 	je .combat
 
@@ -56,7 +58,15 @@ _monster_cat_handler:
     cmp al, 'R'
     je .run
 
+    cmp al, 'T',
+    je .talk
+
 	jmp .done
+
+.talk:
+    mov si, .talk_msg
+    call gui_print_combat_msg
+    jmp .done
 
 .combat:
 	;;Decide on phys or magic attack
@@ -94,8 +104,10 @@ _monster_cat_handler:
 	;call monster_move_chase
     call monster_move_rnd
 .done:
+    mov byte [char_attr], 0x07
 	ret
 
 	.combat_msg db 'IT SWIPES WITH CLAWS', 0
 	.cast_msg db 'IT SPEAKS', 0
 	.trapped_msg db 'YOU ARE TRAPPED', 0
+    .talk_msg db 'im a cat lol', 0

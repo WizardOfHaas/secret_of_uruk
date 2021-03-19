@@ -124,6 +124,9 @@ _option_help_handler:
 menu_yes_no:
 	call gui_print_combat_msg
 
+    mov si, .msg
+    call gui_print_combat_msg
+
 .wait:
 	call keybd_read_char
 
@@ -140,3 +143,5 @@ menu_yes_no:
 	clc
 .done:
 	ret
+
+    .msg db '( Y / N )', 0
