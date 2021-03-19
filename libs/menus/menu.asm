@@ -116,3 +116,27 @@ _option_help_handler:
 	ret
 
 	.msg db 'THERE IS NO HELP IN SIGHT!', 0
+
+;Doesn't really fit in the same way, but ask a question with a y/n
+;	SI - prompt to pring
+;
+;	Set carry flag for yes, clear for no
+menu_yes_no:
+	call gui_print_combat_msg
+
+.wait:
+	call keybd_read_char
+
+	cmp al, 'y'
+	je .yes
+
+	cmp al, 'n'
+	je .no
+	jmp .wait
+.yes:
+	stc
+	jmp .done
+.no:
+	clc
+.done:
+	ret
