@@ -92,7 +92,7 @@ _monster_cat_handler:
 	cmp al, 0x10
 	jg .run_trapped
 
-	clc			;;Clear carry, used to flat a failed run
+	clc			;;Clear carry, used to mark a failed run attempt
 	jmp .done
 .run_trapped:
 	mov si, .trapped_msg
