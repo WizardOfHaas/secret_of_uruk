@@ -9,10 +9,10 @@ _option_combat_run:
 	dw _option_combat_run_handler
 	db 'RUN AWAY', 0
 _option_combat_run_handler:
-    call combat_run
-	jc .done
+    call combat_run	;;Try to run
+	jc .done		;;Did our adversary let us escape?
 
-	mov byte [combat_status], 0 ;;This will need to check the carry flag, but just auto-run for testing sake
+	mov byte [combat_status], 0
 
 	;;Move the player, for safety and sanity
 	mov ax, word [player_last_pos]
