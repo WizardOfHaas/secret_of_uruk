@@ -749,3 +749,45 @@ gui_combat_prompt:
 
 	call keybd_get_string
 	ret
+
+;   DI - list of items
+gui_render_inventory:
+	mov bl, 40
+	mov bh, 6
+	mov cl, 19
+	mov ch, 16
+	call gui_frame
+
+    inc bl
+    inc bh
+    call set_cursor_pos
+
+    mov cx, 32              ;;Max size of list
+
+.loop:
+    cmp word [di], 0
+    je .next
+
+    mov si, word [di]       ;;Grab the item struct
+    mov al, byte [si]       ;;Get char for map tile
+
+    call cprint
+    
+    push bx
+    add bl, 2
+    call set_cursor_pos
+    pop bx
+
+    add si, 19
+    call sprint
+
+    inc bh
+
+.next:
+    add di, 2
+
+    dec cx
+    cmp cx, 0
+    jg .loop
+
+    ret

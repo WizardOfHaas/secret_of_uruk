@@ -3,6 +3,7 @@
 %include "./libs/items/hp.asm"
 %include "./libs/items/door.asm"
 %include "./libs/items/glyphs.asm"
+%include "./libs/items/key.asm"
 
 items_table: times 256 dw 0
 
@@ -11,6 +12,9 @@ items_load:
 	call item_register
 
 	mov si, _item_door
+	call item_register
+
+	mov si, _item_key
 	call item_register
 
 	call items_load_glyphs

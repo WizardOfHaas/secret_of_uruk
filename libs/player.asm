@@ -17,6 +17,8 @@ player_stats:
 player_glyphs: times 26 db '-'
 	db 0
 
+player_items: times 32 db 0
+
 ;Deal with keyboard inputs on map screen
 player_keybd_handle:
     call keybd_read_char    ;;Fetch the latest key press off our buffer
@@ -37,6 +39,10 @@ player_keybd_handle:
 
     cmp al, 'd'
     je .right
+
+    cmp al, 'i'
+    je .inventory
+
     jmp end
 
 .up:
@@ -50,6 +56,11 @@ player_keybd_handle:
     jmp .check
 .right:
     inc bl
+    jmp .check
+
+.inventory:
+    call player_show_inventory
+    jmp .done
 
 .check:
     ;;Is thi s new position valid?
@@ -123,6 +134,7 @@ player_keybd_handle:
     call map_load
     jmp .done
 .item_hit:
+    push si
 	mov di, si
 	add si, 19
 	call gui_print_to_hud
@@ -130,6 +142,8 @@ player_keybd_handle:
 	mov bx, word [player_pos]
 	sub bl, 1
 	sub bh, 7
+    pop si
+
 	call word [di + 17]
 
 	call gui_stats_to_hud
@@ -367,4 +381,47 @@ player_decode_glyph:
 ;   AX - XP to add
 player_add_xp:
     add word [_player_xp], ax
+    ret
+
+;Find the next open inventory space, return in DI
+;   This will need error handling eventually, but it's fine for now
+player_get_inventory_slot:
+    mov di, player_items    ;;Start at our item list
+
+.loop:
+    cmp word [di], 0        ;;Is this an empty slot?
+    je .done                ;;Then we are done, return DI
+
+    add di, 2               ;;Move to the next slow(1 word away)
+    jmp .loop
+
+.done:
+    ret
+
+;   SI - item to add
+player_add_to_inventory:
+    pusha
+
+    call player_get_inventory_slot
+    mov word [di], si
+
+    popa
+    ret
+
+player_show_inventory:
+    pusha
+    mov di, player_items    ;;List of player's items
+
+    call gui_render_inventory
+
+    call keybd_wait
+
+    mov si, test_map_font
+    call img_load_font_pack
+
+	call gui_render_map_screen
+    call gui_stats_to_hud
+	mov byte [combat_status], 0
+
+    popa
     ret
