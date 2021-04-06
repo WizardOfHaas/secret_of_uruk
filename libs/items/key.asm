@@ -28,7 +28,15 @@ dw _item_key_handler
 
 db 'SMALL CLAY KEY', 0
 
+;   AL - 'U' if in 'use' context
 _item_key_handler:
+    cmp al, 'U'
+    je .use
+
 	call item_remove_from_map
     call player_add_to_inventory
+    jmp .done
+    
+.use:
+.done:
 	ret

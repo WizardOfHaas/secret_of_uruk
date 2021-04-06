@@ -754,36 +754,58 @@ gui_combat_prompt:
 gui_render_inventory:
 	mov bl, 40
 	mov bh, 6
-	mov cl, 19
+	mov cl, 25
 	mov ch, 16
 	call gui_frame
+
+    push bx
+    add bl, 10
+    call set_cursor_pos
+    mov si, .msg
+    call sprint
+    pop bx
 
     inc bl
     inc bh
     call set_cursor_pos
 
     mov cx, 32              ;;Max size of list
+    mov al, 'A'
 
 .loop:
     cmp word [di], 0
     je .next
 
+    push bx
+    call cprint
+
+    inc bl
+    call set_cursor_pos
+
+    push ax
+    mov al, ":"
+    call cprint
+
+    add bl, 2
+    call set_cursor_pos
+
     mov si, word [di]       ;;Grab the item struct
     mov al, byte [si]       ;;Get char for map tile
 
     call cprint
-    
-    push bx
+    pop ax
+
     add bl, 2
     call set_cursor_pos
-    pop bx
 
     add si, 19
     call sprint
 
+    pop bx
     inc bh
 
 .next:
+    inc ax
     add di, 2
 
     dec cx
@@ -791,3 +813,5 @@ gui_render_inventory:
     jg .loop
 
     ret
+
+    .msg db 'ITEMS', 0

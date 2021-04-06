@@ -17,7 +17,7 @@ player_stats:
 player_glyphs: times 26 db '-'
 	db 0
 
-player_items: times 32 db 0
+player_items: times 32 dw 0
 
 ;Deal with keyboard inputs on map screen
 player_keybd_handle:
@@ -410,12 +410,31 @@ player_add_to_inventory:
 
 player_show_inventory:
     pusha
-    mov di, player_items    ;;List of player's items
+    mov di, player_items        ;;List of player's items
 
-    call gui_render_inventory
+    call gui_render_inventory   ;;Show the gui pane for items
 
-    call keybd_wait
+    call keybd_wait             ;;Wait for a cher from the user
 
+    ;;Check if it's within A-Z
+    cmp al, 'A'
+    jl .done
+
+    cmp al, 'Z'
+    jg .done
+.use_item:
+    mov ah, 0                   ;;Clear upper part
+    sub al, 'A'                 ;;Shift down to ID
+    mov si, player_items
+
+    shl ax, 2                   ;;Mul by 2
+    add si, ax
+
+    ;;Invoke item handler for a 'Use'
+    mov al, 'U'
+    call word [si]
+
+.done:
     mov si, test_map_font
     call img_load_font_pack
 
