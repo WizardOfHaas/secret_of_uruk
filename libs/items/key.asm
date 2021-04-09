@@ -34,9 +34,16 @@ _item_key_handler:
     je .use
 
 	call item_remove_from_map
+
+    mov si, _item_key
     call player_add_to_inventory
     jmp .done
     
 .use:
+    mov si, .msg
+    call gui_print_to_hud
+    clc                     ;;Clear carry to "clear" out item, would stc to keep it after use
 .done:
 	ret
+
+    .msg db 'AYYYLMAFO'

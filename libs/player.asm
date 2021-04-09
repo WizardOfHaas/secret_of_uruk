@@ -392,7 +392,7 @@ player_get_inventory_slot:
     cmp word [di], 0        ;;Is this an empty slot?
     je .done                ;;Then we are done, return DI
 
-    add di, 2               ;;Move to the next slow(1 word away)
+    add di, 2               ;;Move to the next slot(1 word away)
     jmp .loop
 
 .done:
@@ -417,22 +417,35 @@ player_show_inventory:
     call keybd_wait             ;;Wait for a cher from the user
 
     ;;Check if it's within A-Z
-    cmp al, 'A'
+    cmp al, 'a'
     jl .done
 
-    cmp al, 'Z'
+    cmp al, 'z'
     jg .done
 .use_item:
     mov ah, 0                   ;;Clear upper part
-    sub al, 'A'                 ;;Shift down to ID
-    mov si, player_items
+    sub al, 'a'                 ;;Shift down to ID
+    mov di, player_items
 
     shl ax, 2                   ;;Mul by 2
-    add si, ax
+    add di, ax
+
+    cmp word [di], 0
+    je .done
 
     ;;Invoke item handler for a 'Use'
+    push di
+    mov si, word[di]
+    add si, 17
+
     mov al, 'U'
     call word [si]
+    pop di
+
+    jc .done    ;;Do we keep the item? Did the handler clear carry?
+
+    ;;Otherwise, remove it!
+    mov word [di], 0
 
 .done:
     mov si, test_map_font

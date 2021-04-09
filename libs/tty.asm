@@ -619,11 +619,11 @@ print_regs:
 	ret
 
 	.labels:
-		db ' ax: ', 0
-		db ' bx: ', 0
-		db ' cx: ', 0
-		db ' dx: ', 0
-		db ' si: ', 0
-		db ' di: ', 0
-		db ' es: ', 0
-		db ' fs: ', 0
+		db ' AX: ', 0
+		db ' BX: ', 0
+		db ' CX: ', 0
+		db ' DX: ', 0
+		db ' SI: ', 0
+		db ' DI: ', 0
+		db ' ES: ', 0
+		db ' FS: ', 0
