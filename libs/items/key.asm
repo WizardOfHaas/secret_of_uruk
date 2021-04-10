@@ -1,10 +1,3 @@
-;;Item struct
-;;Will need to include...
-;;	Item char code
-;;	Font tile
-;;	Item event handler
-;;	Item name
-
 _item_key:
 db 14
 db 00000000b
