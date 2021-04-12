@@ -29,6 +29,11 @@ dw _item_hp_handler
 db 'HEALTH PACK', 0
 
 _item_hp_handler:
+    cmp al, 'H'
+    je .done
+
 	add word [_player_hp], 10
 	call item_remove_from_map
+.done:
+    clc
 	ret

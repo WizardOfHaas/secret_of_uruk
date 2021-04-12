@@ -521,6 +521,11 @@ dw _item_glyph_handler
 db 'A STRANGE GLYPH', 0
 
 _item_glyph_handler:
+    cmp al, 'H'
+    je .done
+
 	call player_add_glyph
 	call item_remove_from_map
+.done:
+    clc
 	ret

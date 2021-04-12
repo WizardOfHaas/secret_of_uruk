@@ -164,6 +164,14 @@ player_keybd_handle:
 .done:
 	ret
 
+;Move player to last known position
+player_move_back:
+    push bx
+    mov bx, word [player_last_pos]
+	mov word [player_pos], bx
+    pop bx
+    ret
+
 ;Move to the next map...
 ;   AH - Direction player is trying to go: N/S/E/W
 player_move_to_map:
@@ -456,4 +464,37 @@ player_show_inventory:
 	mov byte [combat_status], 0
 
     popa
+    ret
+
+;See if the player has a given item
+;   AL - char code of item to check for
+;   Clear carry if the player has the item in question, set carry if not found
+player_check_inventory:
+    push si
+    push di
+    xor cx, cx
+
+    mov di, player_items
+.loop:
+    cmp word [di], 0
+    je .next
+
+    mov si, word [di]
+    cmp byte [si], al
+    je .found
+
+.next:
+    add di, 2
+    inc cx
+    cmp cx, 32
+    jl .loop
+
+    stc
+    jmp .done
+
+.found:
+    clc
+.done:
+    pop di
+    pop si
     ret

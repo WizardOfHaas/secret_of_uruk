@@ -22,4 +22,5 @@ dw _item_door_handler
 db 'THE DOOR PUSHES OPEN', 0
 
 _item_door_handler:
+    clc
 	ret

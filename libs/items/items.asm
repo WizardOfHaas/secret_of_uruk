@@ -4,6 +4,7 @@
 %include "./libs/items/door.asm"
 %include "./libs/items/glyphs.asm"
 %include "./libs/items/key.asm"
+%include "./libs/items/gate.asm"
 
 items_table: times 256 dw 0
 
@@ -15,6 +16,9 @@ items_load:
 	call item_register
 
 	mov si, _item_key
+	call item_register
+
+    mov si, _item_gate
 	call item_register
 
 	call items_load_glyphs
@@ -86,8 +90,17 @@ item_lookup:
 	mov di, items_table
 	add di, ax
 
-	mov si, word [di]
+	mov si, word [di]   ;;Get the item
+    cmp si, 0           ;;Bail if the slot is empty
+    je .done
 
+    ;;Otherwise, lets call the item to see if it's solid or not...
+    mov al, 'H'
+    call word [si + 17]
+    jnc .done
+    mov si, 0
+
+.done:
 	pop ax
 	pop bx
 	ret

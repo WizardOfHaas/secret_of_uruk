@@ -1,5 +1,7 @@
+%define _ITEM_KEY_CHAR 14
+
 _item_key:
-db 14
+db _ITEM_KEY_CHAR
 db 00000000b
 db 01111110b
 db 01000000b
@@ -26,6 +28,9 @@ _item_key_handler:
     cmp al, 'U'
     je .use
 
+    cmp al, 'H'
+    je .hit
+
 	call item_remove_from_map
 
     mov si, _item_key
@@ -35,7 +40,10 @@ _item_key_handler:
 .use:
     mov si, .msg
     call gui_print_to_hud
-    clc                     ;;Clear carry to "clear" out item, would stc to keep it after use
+    stc                     ;;Clear carry to "clear" out item, would stc to keep it after use
+    jmp .done
+.hit:
+    clc
 .done:
 	ret
 
