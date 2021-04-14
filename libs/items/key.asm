@@ -47,4 +47,4 @@ _item_key_handler:
 .done:
 	ret
 
-    .msg db 'AYYYLMAFO'
+    .msg db 'AYYYLMAFO', 0

@@ -40,4 +40,4 @@ _item_gate_handler:
 .done:
 	ret
 
-    .msg db 'YOU UNLOCK THE GATE'
+    .msg db 'YOU UNLOCK THE GATE', 0
