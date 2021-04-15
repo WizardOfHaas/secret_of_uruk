@@ -19,7 +19,7 @@ db 00111100b
 
 dw _item_gate_handler
 
-db 'A LOCKED GATE', 0
+db 'THE GATE YIELDS', 0
 
 ;   AL -    'U' if in 'use' context (stc to keep item, clc to remove after use)
 ;           'H' to check for 'hit'-ability (stc if player can step here, clc if solid)
@@ -37,7 +37,18 @@ _item_gate_handler:
     ;;Otherwise remove gate
     mov al, _ITEM_KEY_CHAR
     call player_check_inventory
+    jnc .unlocked
+
+.locked:
+    mov si, .locked_msg
+    call gui_print_to_hud
+    stc
+    jmp .done
+
+.unlocked:
+    clc
+
 .done:
 	ret
 
-    .msg db 'YOU UNLOCK THE GATE', 0
+    .locked_msg db 'THE GATE IS LOCKED', 0
