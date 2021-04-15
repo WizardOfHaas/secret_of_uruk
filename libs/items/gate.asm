@@ -46,6 +46,7 @@ _item_gate_handler:
     jmp .done
 
 .unlocked:
+    call player_remove_item
     clc
 
 .done:

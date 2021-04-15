@@ -469,6 +469,7 @@ player_show_inventory:
 ;See if the player has a given item
 ;   AL - char code of item to check for
 ;   Clear carry if the player has the item in question, set carry if not found
+;   AX - ID of inveotory slot
 player_check_inventory:
     push si
     push di
@@ -495,6 +496,18 @@ player_check_inventory:
 .found:
     clc
 .done:
+    mov ax, cx
     pop di
     pop si
+    ret
+
+;Clear inventory slot...
+;   AX - ID of slot to clear
+player_remove_item:
+    pusha
+    mov si, player_items
+    shl ax, 2
+    add si, ax
+    mov word [si], 0
+    popa
     ret
