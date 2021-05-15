@@ -87,13 +87,18 @@ db 046,046,046,046,046,046,046,046,046,046,046,046,046,046,046,046,046,046,046,0
 db 0
 
 ;;Monsters for this map
-.monsters_count: db 2
+.monsters_count: db 3
 ;;  x|y|hp|pointer -> 6 bytes wide
 .monsters:
 db 16, 16
 dw 15, _monster_cat
+
 db 40, 15
 dw 15, _monster_cat
+
+db 45, 16
+dw 15, _monster_dude
+
 ;;Internal linkages to other maps
 .links_count: db 1
 ;;  source_x|y|target_x|y|target_map_id -> 5 bytes (oof)

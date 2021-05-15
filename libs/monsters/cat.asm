@@ -1,10 +1,4 @@
-;;Item struct
-;;Will need to include...
-;;	Item char code
-;;	Font tile
-;;	Item event handler
-;;	Item name
-
+;;The CAT monster, a good reference
 _monster_cat:
 db 91
 db 00000000b
@@ -24,6 +18,7 @@ db 10011001b
 db 00100100b
 db 00000000b
 
+;;Stat block
 dw 1	;;EXP
 dw 15	;;HP
 dw 0	;;AC

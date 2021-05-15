@@ -1,6 +1,7 @@
 	db 'monster.asm'
 
 %include "./libs/monsters/cat.asm"
+%include "./libs/monsters/dude.asm"
 
 monsters_table: times 256 dw 0
 
@@ -11,6 +12,9 @@ monsters_on_map: times 64 dw 0
 
 monsters_load:
 	mov si, _monster_cat
+	call monster_add_to_table
+
+	mov si, _monster_dude
 	call monster_add_to_table
 	ret
 
