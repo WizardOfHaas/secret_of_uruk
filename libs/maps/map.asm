@@ -250,6 +250,7 @@ map_check_links:
     mov si, 0
     jmp .done
 .ok:
+    mov cx, word [si + 2]
     movzx ax, byte [si + 4]
     mov bx, 2
     mul bx

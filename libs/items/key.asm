@@ -36,15 +36,15 @@ _item_key_handler:
     mov si, _item_key
     call player_add_to_inventory
     jmp .done
-    
+
 .use:
     mov si, .msg
     call gui_print_to_hud
-    stc                     ;;Clear carry to "clear" out item, would stc to keep it after use
+    stc                     ;;Clear carry would "clear" out item, stc to keep it after use
     jmp .done
 .hit:
     clc
 .done:
 	ret
 
-    .msg db 'AYYYLMAFO', 0
+    .msg db 'THIS ONLY WORKS ON DOORS', 0

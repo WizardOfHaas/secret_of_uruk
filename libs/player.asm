@@ -131,6 +131,8 @@ player_keybd_handle:
     call player_move_to_map
     jmp .done
 .link_hit:
+    mov word [player_pos], cx
+
     call map_load
     jmp .done
 .item_hit:
@@ -330,6 +332,26 @@ player_add_glyph:
 	call gui_glyphs_to_hud
 	pop bx
 	ret
+
+;Check if player has any glyphs
+;   SI - pointer to 1st glyph, 0 if none
+player_has_glyph:
+    push cx
+    mov si, player_glyphs
+    xor cx, cx
+,loop:
+    cmp byte [si], 0
+    jne .done
+    cmp cx, 26
+    jge .done
+
+    inc cx
+    inc si
+    jmp .loop
+
+.done:
+    pop cx
+    ret
 
 ;Turn a string of glyphs into letters
 ;	SI - the CURSED STRING, it will be PARTLY UNCURSED

@@ -63,6 +63,12 @@ _monster_dude_handler:
 
 .talk:
     ;;Called when the player tries to talk
+    ;;We need to add a routine to clear the combat menu pane
+    call gui_clear_combat_menu
+    mov bl, 60
+    mov bh, 7
+    mov si, menu_dude_main
+    call menu_start
     jmp .done
 
 .combat:
@@ -71,8 +77,8 @@ _monster_dude_handler:
 
 .run:
     ;;This is called when the player tries to run from combat
-    ;;stc to let them run
-    ;;clc to trap them
+    ;;clc to let them run
+    ;;stc to trap them
     clc
     jmp .done
 
@@ -83,8 +89,10 @@ _monster_dude_handler:
 .move:
     ;;Called on each map refresh, use helper functions to move around the monster
     ;;ex: random walk
-    call monster_move_rnd
+    ;call monster_move_rnd
     
 .done:
     mov byte [char_attr], 0x07
 	ret
+
+%include "./libs/menus/dude_menu.asm"

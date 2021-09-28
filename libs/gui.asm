@@ -733,6 +733,16 @@ gui_clear_combat_msg:
 	popa
 	ret
 
+gui_clear_combat_menu:
+    pusha
+	mov bl, 60
+	mov bh, 7
+	mov cl, 19
+	mov dx, 256
+	call block_clear
+    popa
+    ret
+
 ;Prompt user for text input
 ;	SI - prompt
 ;	DI - where to store input string

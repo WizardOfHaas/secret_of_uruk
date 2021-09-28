@@ -520,6 +520,46 @@ db 11111111b
 dw _item_glyph_handler
 db 'A STRANGE GLYPH', 0
 
+db 123
+db 11111111b
+db 11111111b
+db 11111111b
+db 11000011b
+db 11111011b
+db 11111011b
+db 11111011b
+db 11111011b
+db 11111111b
+db 10000001b
+db 11111101b
+db 11111101b
+db 11111101b
+db 11111101b
+db 11111101b
+db 11111111b
+dw _item_glyph_handler
+db 'A STRANGE GLYPH', 0
+
+db 124
+db 11111111b
+db 11111111b
+db 11111111b
+db 11000011b
+db 11100111b
+db 11100111b
+db 11100111b
+db 11100111b
+db 11100111b
+db 10000001b
+db 11111111b
+db 11111111b
+db 11111111b
+db 11111111b
+db 11111111b
+db 11111111b
+dw _item_glyph_handler
+db 'A STRANGE GLYPH', 0
+
 _item_glyph_handler:
     cmp al, 'H'
     je .done

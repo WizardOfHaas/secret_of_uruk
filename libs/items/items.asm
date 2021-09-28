@@ -27,7 +27,7 @@ items_load:
 ;Load up all glyph items
 items_load_glyphs:
 	mov si, _item_glyphs
-	mov cx, 24
+	mov cx, 26
 
 .loop:
 	call item_register
