@@ -2,8 +2,8 @@ import sys
 
 from PIL import Image 
 from numpy import asarray
-#import matplotlib
-#import matplotlib.pyplot as plt
+import matplotlib
+import matplotlib.pyplot as plt
 
 #Dimension in characters(16 x 8)
 width = 20
@@ -20,7 +20,7 @@ def to_bin(tile, code):
     ret = ""
 
     for l in tile:
-        d = map(lambda x: 1 if x else 0, l)
+        d = map(lambda x: 0 if x else 1, l)
         ret += "db " + "".join(str(x) for x in d) + "b\n"
 
     return ret
@@ -34,6 +34,9 @@ def show(tiles):
         plt.imshow(tiles[i])
 
     plt.show()
+
+def diff_letters(a,b):
+    return sum ( a[i] != b[i] for i in range(len(a)) )
 
 #Read in image, convert to 128x128 black and white
 #img = Image.open(sys.argv[1]).convert("1")
@@ -53,11 +56,21 @@ tile_map = []
 #Clean up duplicates
 for tile in tiles:
     d = to_bin(tile, charCode)
+    new_tile = True
 
     if d in font_pack:
         i = font_pack.index(d)
         tile_map.append(i)
+        new_tile = False
     else:
+        for tile in font_pack:
+            if diff_letters(tile, d) < 10: #Higher number = less accurate, but fewer unique tiles
+                i = font_pack.index(tile)
+                tile_map.append(i)
+                new_tile = False
+                break
+
+    if new_tile:
         font_pack.append(d)
         tile_map.append(len(font_pack) - 1)
         charCode += 1

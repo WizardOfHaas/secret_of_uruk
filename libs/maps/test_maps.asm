@@ -70,10 +70,13 @@ test_town: ;;Map ID 3
 
 tunnel_1: ;;Map ID 4
 %include "./libs/maps/tunnel_1.asm"
-.monster_count: db 1
+.monster_count: db 2
 .monsters:
     db 35, 14
     dw 15, _monster_cat
+    
+    db 60, 13
+    dw 50, _monster_bird_man
 
 .link_count: db 3
 ;;  source_x|y|target_x|y|target_map_id

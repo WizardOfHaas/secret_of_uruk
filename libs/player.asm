@@ -335,22 +335,26 @@ player_add_glyph:
 
 ;Check if player has any glyphs
 ;   SI - pointer to 1st glyph, 0 if none
-player_has_glyph:
-    push cx
+;   AX - first slot
+player_has_any_glyph:
     mov si, player_glyphs
-    xor cx, cx
-,loop:
-    cmp byte [si], 0
+    xor ax, ax
+.loop:
+    cmp byte [si], '-'
     jne .done
-    cmp cx, 26
-    jge .done
 
-    inc cx
+    cmp ax, 25
+    jge .no_glyphs
+
+    inc ax
     inc si
     jmp .loop
 
+.no_glyphs:
+    xor si, si
+    mov si, 0
+
 .done:
-    pop cx
     ret
 
 ;Turn a string of glyphs into letters
@@ -372,12 +376,13 @@ player_decode_glyph_string:
 	jmp .loop
 
 .done:
+    mov byte [di], 0
 	popa
 
 	mov si, .tmp
 	ret
 
-	.tmp times 32 db 0
+	.tmp times 64 db 0
 
 ;Decode a single glyph
 ;	AL - char code of glyph
@@ -412,6 +417,8 @@ player_decode_glyph:
 player_add_xp:
     add word [_player_xp], ax
     ret
+
+
 
 ;Find the next open inventory space, return in DI
 ;   This will need error handling eventually, but it's fine for now

@@ -2,6 +2,7 @@
 
 %include "./libs/monsters/cat.asm"
 %include "./libs/monsters/dude.asm"
+%include "./libs/monsters/bird_man.asm"
 
 monsters_table: times 256 dw 0
 
@@ -15,6 +16,9 @@ monsters_load:
 	call monster_add_to_table
 
 	mov si, _monster_dude
+	call monster_add_to_table
+
+    mov si, _monster_bird_man
 	call monster_add_to_table
 	ret
 
@@ -270,6 +274,7 @@ monster_take_damage:
 ;	SI - monster
 monster_attack_phys:
 	call combat_roll_dice
+    add ax, word [si + 23] ;Add in monster's power stat
 
 	;;Need to adjust based on POW here...
 	call itoa

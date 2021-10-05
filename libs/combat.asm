@@ -121,6 +121,8 @@ combat_run:
 ;Attack the current monster
 combat_attack:
 	call combat_roll_dice			;;AX is our base damage
+    add ax, word [_player_pw]
+
 	call itoa
 	call gui_print_combat_msg
 
