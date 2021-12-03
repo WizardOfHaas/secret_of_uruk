@@ -154,6 +154,9 @@ player_keybd_handle:
     cmp word [si + 2], 0
     je .done
 
+    mov bx, word [player_last_pos]  ;;STEP BACK!
+    mov word [player_pos], bx
+
 	push si
 	mov di, word [si + 4]
 	add di, 29

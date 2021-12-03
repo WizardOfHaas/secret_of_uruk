@@ -5,10 +5,42 @@
 current_map: dw 0
 current_map_id: db 0
 
+;;To keep everything consistent we need to keep track of maps we have generated
+;;  This is going to be a pointer to a table or RNG seeds
+_map_seeds: dw 0
+_map_buffer: dw 0
+_last_rng_map: db 0 ;;Last random map ID generated
+
+init_map_generator:
+    ;;Alloc and fill in our seed table
+    mov ax, 512
+    call malloc
+    mov word [_map_seeds], si
+    xor cx, cx
+.loop:
+    call rnd
+    mov word [si], ax
+    add si, 2
+    inc cx
+    cmp cx, 255
+    jl .loop
+
+    ;;Allocate a map buffer
+    mov ax, 1249
+    call malloc
+    mov word [_map_buffer], si
+    ret
+
+;   AX - seed number to use
 map_generate_cave:
 	pusha
-	;mov si, start_free_mem	;;Set si as our map buffer location
-	mov si, test_map
+    ;;Fetch the seed!
+    mov si, word [_map_seeds]
+    add si, ax
+    mov ax, word [si]
+    mov word [_rnd_seed], ax
+
+	mov si, word [_map_buffer]	;;Set si as our map buffer location
 	
 	;Initialize to non-walkable spaces
 	mov di, si
@@ -21,10 +53,23 @@ map_generate_cave:
 	sub bl, 1
 	sub bh, 7
 
-	mov cx, 1000				;;Set number of iterations for our walk
+	mov cx, 5000				;;Set number of iterations for our walk
 
 .loop:
+    cmp bl, 0
+    je .skip
+
+    cmp bh, 0
+    je .skip
+
+    cmp bh, 15
+    jge .skip
+
+    cmp bl, 78
+    jge .skip
+
 	call pos_to_offset
+
 	mov di, si
 	add di, ax
 
@@ -60,10 +105,40 @@ map_generate_cave:
 	dec cx
 	cmp cx, 0
 	jg .loop
+    jmp .done
 
-	call print_regs
+.skip:
+    call rnd
+    mov bx, word [player_pos]
+    sub bl, 1
+	sub bh, 7
+
+    jmp .loop
+
+.done:
+    ;;Place a hatch going back up to the last map
+	mov bx, [player_pos]
+	sub bl, 1
+	sub bh, 7
+
+    mov si, word [_map_buffer]
+    call pos_to_offset
+    mov di, si
+    add di, ax
+    mov byte [di], 220
+
+    mov di, si
+    add di, 1249
+    mov byte [di], 1        ;;We have 1 link
+    mov word [di + 1], bx   ;;At player position
+    mov word [di + 3], bx   ;;Links to player position
+    
+    mov al, byte [current_map_id] ;;Pointing to current map ID
+    mov byte [di + 5], al
 
 	popa
+
+    mov si, word [_map_buffer]
 	ret
 
 ;	BX - x/y
@@ -72,6 +147,7 @@ map_generate_cave:
 pos_to_offset:
 	push cx
 	push dx
+    push bx
 
 	cmp bl, 77
 	jl .x_ok
@@ -95,6 +171,7 @@ pos_to_offset:
 	mov dl, bl
 	add ax, dx
 
+    pop bx
 	pop dx
 	pop cx
 	ret
@@ -175,12 +252,21 @@ map_fetch_from_table:
     add di, ax
     movzx ax, byte [di]
 
+    cmp ax, 250
+    jge .random_cave
+
     ;;Refrence loaded maps table
     mov di, loaded_maps
     mov cx, 2
     mul cx
     add di, ax
     mov si, word [di]
+    jmp .done
+
+.random_cave:
+    call map_generate_cave
+
+.done:
     ret
 
 ;Basically a wrapper for cprint... for now...
@@ -252,11 +338,19 @@ map_check_links:
 .ok:
     mov cx, word [si + 2]
     movzx ax, byte [si + 4]
+
+    ;;AX is out map ID, check if it's in the random block
+    cmp ax, 250
+    jge .random_cave
+
     mov bx, 2
     mul bx
     mov di, loaded_maps
     add di, ax
     mov si, word [di]
+    jmp .done
+.random_cave:
+    call map_generate_cave
 .done:
     pop ax
     pop bx

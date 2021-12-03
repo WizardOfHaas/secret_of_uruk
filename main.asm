@@ -51,6 +51,7 @@ start:
 	call img_set_font
 
 	call rnd_init	;;Seed up the random number generator
+	call init_map_generator ;;Run setup for random map generator
 
 	;;Load up the starting map...
 	;;call map_generate_cave ;;This is a fun secret to string in later

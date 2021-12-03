@@ -2,7 +2,7 @@
 
 %include "./libs/monsters/cat.asm"
 %include "./libs/monsters/dude.asm"
-%include "./libs/monsters/bird_man.asm"
+;%include "./libs/monsters/bird_man.asm"
 
 monsters_table: times 256 dw 0
 
@@ -18,8 +18,8 @@ monsters_load:
 	mov si, _monster_dude
 	call monster_add_to_table
 
-    mov si, _monster_bird_man
-	call monster_add_to_table
+	;mov si, _monster_bird_man
+	;call monster_add_to_table
 	ret
 
 ;	SI - monster struct

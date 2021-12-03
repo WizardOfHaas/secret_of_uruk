@@ -1,4 +1,4 @@
-main : main.asm
+main : test.com
 	nasm main.asm -o startup.bin -Wall
 
 install : test.com

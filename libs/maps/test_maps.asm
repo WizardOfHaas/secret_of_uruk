@@ -3,6 +3,9 @@
 ;;  if they are a file or a generated map
 ;;...or some other data structure for defining the world map
 
+;;Random generation: I use reserved map numbers to fire random map generator
+;;      255 - Random Cavern
+
 ;;Other option: overworld map as grid
 ;;  Each location -> 1 word cell ID
 ;;  Random areas filled in via placeholder chars on cell maps
@@ -76,7 +79,8 @@ tunnel_1: ;;Map ID 4
     dw 15, _monster_cat
     
     db 60, 13
-    dw 50, _monster_bird_man
+    ;dw 50, _monster_bird_man
+    dw 15, _monster_cat
 
 .link_count: db 3
 ;;  source_x|y|target_x|y|target_map_id
@@ -119,7 +123,7 @@ dw 15, _monster_dude
 ;;Internal linkages to other maps
 .links_count: db 1
 ;;  source_x|y|target_x|y|target_map_id -> 5 bytes (oof)
-.links: db 3, 16, 3, 16, 2
+.links: db 3, 16, 3, 16, 250
 
 rand_map:
 db  46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46
